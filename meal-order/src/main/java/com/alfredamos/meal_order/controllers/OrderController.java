@@ -2,11 +2,11 @@ package com.alfredamos.meal_order.controllers;
 
 
 import com.alfredamos.meal_order.dto.OrderDto;
-import com.alfredamos.meal_order.mapper.OrderMapper;
+import com.alfredamos.meal_order.exceptions.ForbiddenException;
 import com.alfredamos.meal_order.services.OrderService;
-import com.alfredamos.meal_order.services.UserService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,22 +21,24 @@ import java.util.UUID;
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final UserService userService;
-    private final OrderMapper orderMapper;
+    private final OwnerCheck ownerCheck;
 
     @PatchMapping("/checkout")
-    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
-
-        var newOrder = this.orderService.createOrder(orderDto);
-
-        var newOrderDto = this.orderMapper.toDTO(newOrder);
+    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderDto orderDto) {
+        var newOrderDto = this.orderService.createOrder(orderDto);
 
         return new ResponseEntity<>(newOrderDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable UUID id){
-    var result = this.orderService.deleteOrderById(id);
+        //----> Check for ownership.
+        var isOwner = ownerCheck.compareUserIdForOrder(id);
+        if (!isOwner){
+            throw new ForbiddenException("You are not permitted to delete this order!");
+        }
+
+        var result = this.orderService.deleteOrderById(id);
 
     return ResponseEntity.ok(result);
 
@@ -44,6 +46,10 @@ public class OrderController {
 
     @DeleteMapping("/delete-all-orders-by-user-id/{userId}")
     public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable UUID userId){
+        var isSameUser = ownerCheck.compareUserId(userId);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
 
         var result = this.orderService.deleteOrdersByUser(userId);
 
@@ -52,59 +58,41 @@ public class OrderController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<OrderDto> editOrderById(@PathVariable UUID id){
-       var order = this.orderService.editOrderById(id);
+        //----> Check for ownership.
+        var isOwner = ownerCheck.compareUserIdForOrder(id);
+        if (!isOwner){
+            throw new ForbiddenException("You are not permitted to delete this order!");
+        }
 
-       var orderDto = this.orderMapper.toDTO(order);
+       var orderDto = this.orderService.editOrderById(id);
 
        return ResponseEntity.ok(orderDto);
 
     }
 
-    @GetMapping
-    public ResponseEntity<List<OrderDto>> getAllOrders(){
-        var orders = this.orderService.getAllOrders();
-
-        var ordersDto = this.orderMapper.toDTOList(orders);
-
-        return ResponseEntity.ok(ordersDto);
-    }
-
     @GetMapping("/orders-by-user-id/{userId}")
     public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable UUID userId){
-        //----> Get the user.
-        var user = this.userService.getUserById(userId).orElse(null);
+        var isSameUser = ownerCheck.compareUserId(userId);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
 
-        var orders = this.orderService.getAllOrdersByUser(user);
-
-        var ordersDto = this.orderMapper.toDTOList(orders);
+        var ordersDto = this.orderService.getAllOrdersByUser(userId);
 
         return ResponseEntity.ok(ordersDto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable UUID id){
-        var order = this.orderService.getOrderById(id).orElse(null);
+        //----> Check for ownership.
+        var isOwner = ownerCheck.compareUserIdForOrder(id);
+        if (!isOwner){
+            throw new ForbiddenException("You are not permitted to delete this order!");
+        }
 
-        var orderDto = this.orderMapper.toDTO(order);
-
-        return ResponseEntity.ok(orderDto);
-    }
-
-    @PatchMapping("/delivered/{id}")
-    public ResponseEntity<OrderDto> orderDelivered(@PathVariable UUID id){
-        var order = this.orderService.deliveredOrder(id);
-
-        var orderDto = this.orderMapper.toDTO(order);
+        var orderDto = this.orderService.getOrderById(id);
 
         return ResponseEntity.ok(orderDto);
     }
 
-    @PatchMapping("/shipped/{id}")
-    public ResponseEntity<OrderDto> orderShipped(@PathVariable UUID id){
-        var order = this.orderService.shippedOrder(id);
-
-        var orderDto = this.orderMapper.toDTO(order);
-
-        return ResponseEntity.ok(orderDto);
-    }
 }

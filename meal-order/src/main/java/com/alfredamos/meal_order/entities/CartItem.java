@@ -36,6 +36,7 @@ public class CartItem {
 
   @ManyToOne
   @JoinColumn(name = "order_id")
-  private Order order;     
+  private Order order;
+
 
 }

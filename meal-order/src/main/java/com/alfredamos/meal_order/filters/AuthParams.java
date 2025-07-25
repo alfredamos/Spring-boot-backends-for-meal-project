@@ -1,17 +1,17 @@
 package com.alfredamos.meal_order.filters;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Getter
-public class SD {
-    private final String accessToken = "accessToken";
-    private final String refreshToken = "refreshToken";
-    private final String authorization = "Authorization";
-    private final String bearer = "Bearer ";
-    private final String role = "ROLE_";
+public class AuthParams {
+    public final static String accessToken = "accessToken";
+    public final static String refreshToken = "refreshToken";
+    public final static String authorization = "Authorization";
+    public final static String bearer = "Bearer ";
+    public final static String role = "ROLE_";
+    public final static String accessTokenPath = "/";
+    public final static String refreshTokenPath = "/auth/refresh";
 
 }

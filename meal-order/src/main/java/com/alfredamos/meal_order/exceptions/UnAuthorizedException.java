@@ -1,4 +1,8 @@
 package com.alfredamos.meal_order.exceptions;
 
-public class UnAuthorizedException {
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class UnAuthorizedException extends RuntimeException{
+    private String message;
 }

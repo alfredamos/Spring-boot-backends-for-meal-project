@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -34,6 +32,7 @@ public class User {
   private String phone;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private Gender gender;
 
   @Column(nullable = false)
@@ -43,6 +42,7 @@ public class User {
   private String password;
 
   @Column()
+  @Enumerated(EnumType.STRING)
   private Role role;
 
   @OneToMany(mappedBy = "user", orphanRemoval = true)

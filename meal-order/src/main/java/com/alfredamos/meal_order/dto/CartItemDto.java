@@ -1,5 +1,8 @@
 package com.alfredamos.meal_order.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +15,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class CartItemDto {
+    @NotBlank(message = "Name is required.")
     private String name;
 
+    @NotBlank(message = "Image is required.")
     private String image;
 
+    @Positive(message = "Price must be positive.")
     private Double price;
 
+    @Positive(message = "Quantity must be greater than zero.")
+    @Size(min=1, max=20, message = "Quantity must be between 1 and 20.")
     private Integer quantity;
 
+    @NotBlank(message = "PizzaId is required.")
     private UUID pizzaId;
 
 }

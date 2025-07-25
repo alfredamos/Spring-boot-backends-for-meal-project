@@ -7,6 +7,4 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CartItemRepository extends JpaRepository<CartItem, UUID> {
-    @Override
-    <S extends CartItem> List<S> saveAll(Iterable<S> entities);
 }

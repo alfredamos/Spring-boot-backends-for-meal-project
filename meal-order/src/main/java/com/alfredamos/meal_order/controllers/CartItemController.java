@@ -1,10 +1,10 @@
 package com.alfredamos.meal_order.controllers;
 
 import com.alfredamos.meal_order.dto.CartItemDto;
-import com.alfredamos.meal_order.mapper.CartItemMapper;
 import com.alfredamos.meal_order.services.CartItemService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/cart-items")
 public class CartItemController {
-    private final CartItemMapper cartItemMapper;
     private final CartItemService cartItemService;
 
     @GetMapping
     public ResponseEntity<List<CartItemDto>> getAllCartItems(){
-        var cartItems = this.cartItemService.getAllCartItems();
-
-        var cartItemsDto = this.cartItemMapper.toDTOList(cartItems);
+        var cartItemsDto = this.cartItemService.getAllCartItems();
 
         return new ResponseEntity<>(cartItemsDto, HttpStatus.OK);
 
@@ -33,18 +30,14 @@ public class CartItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CartItemDto> getCartItemById(@PathVariable UUID id){
-        var cartItem = this.cartItemService.getCartItemById(id).orElse(null);
-
-        var cartItemDto = this.cartItemMapper.toDTO(cartItem);
+        var cartItemDto = this.cartItemService.getCartItemById(id);
 
         return new ResponseEntity<>(cartItemDto, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<CartItemDto> createCartItem(@RequestBody CartItemDto cartItemDto){
-        var cartItem = this.cartItemMapper.toEntity(cartItemDto);
-
-        this.cartItemService.create(cartItem);
+    public ResponseEntity<CartItemDto> createCartItem(@Valid @RequestBody CartItemDto cartItemDto){
+        this.cartItemService.create(cartItemDto);
 
         return new ResponseEntity<>(cartItemDto, HttpStatus.CREATED);
     }
@@ -57,10 +50,8 @@ public class CartItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CartItemDto> editCartItem(@PathVariable UUID id, CartItemDto cartItemDto){
-        var cartItem = this.cartItemMapper.toEntity(cartItemDto);
-
-        this.cartItemService.editCartItem(id, cartItem);
+    public ResponseEntity<CartItemDto> editCartItem(@Valid @PathVariable UUID id, CartItemDto cartItemDto){
+        this.cartItemService.editCartItem(id, cartItemDto);
 
         return new ResponseEntity<>(cartItemDto, HttpStatus.OK);
     }

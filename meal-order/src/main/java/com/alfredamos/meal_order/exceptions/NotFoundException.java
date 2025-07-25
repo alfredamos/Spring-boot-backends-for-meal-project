@@ -1,4 +1,9 @@
 package com.alfredamos.meal_order.exceptions;
 
-public class NotFoundException {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@AllArgsConstructor
+public class NotFoundException extends RuntimeException {
+    private String message;
 }

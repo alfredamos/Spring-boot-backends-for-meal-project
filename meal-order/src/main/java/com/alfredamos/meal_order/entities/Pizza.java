@@ -39,7 +39,7 @@ public class Pizza {
   @Column(nullable = false)
   private String description;
 
-  @OneToMany(mappedBy = "pizza", orphanRemoval = true)
+  @OneToMany(mappedBy = "pizza")
   private List<CartItem> cartItems = new ArrayList<>();
 
   @ManyToOne

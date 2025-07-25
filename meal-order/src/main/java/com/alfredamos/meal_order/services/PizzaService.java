@@ -1,16 +1,22 @@
 package com.alfredamos.meal_order.services;
 
-import com.alfredamos.meal_order.entities.Pizza;
+import com.alfredamos.meal_order.dto.PizzaDto;
+import com.alfredamos.meal_order.entities.User;
+import com.alfredamos.meal_order.exceptions.NotFoundException;
+import com.alfredamos.meal_order.mapper.PizzaMapper;
+import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
+import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
+import io.jsonwebtoken.impl.security.EdwardsCurve;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.webauthn.management.JdbcPublicKeyCredentialUserEntityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -19,20 +25,24 @@ import java.util.UUID;
 @Service
 public class PizzaService {
     private final PizzaRepository pizzaRepository;
+    private final PizzaMapper pizzaMapper;
+    private final UserService userService;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     //----> Create new resource.
-    public Pizza createPizza(Pizza pizza){
-        System.out.println("In pizza-service, pizzaDto : " + pizza);
-        return this.pizzaRepository.save(pizza);
+    public void createPizza(PizzaDto pizzaDto){
+        var user = this.userRepository.findById((pizzaDto.getUserId())).orElse(null);
+
+        var pizza = pizzaMapper.toEntity(pizzaDto);
+        pizza.setUser(user);
+
+        this.pizzaRepository.save(pizza);
     }
 
     //----> Delete resource with given id.
     public ResponseMessage deletePizza(UUID id) {
-        var exist = this.pizzaRepository.existsById(id);
-
-        if (!exist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist!");
-        }
+        checkForOrderExistence(id); //----> Check for existence of pizza with the given id.
 
         this.pizzaRepository.deleteById(id);
 
@@ -40,29 +50,44 @@ public class PizzaService {
     }
 
     //----> Edit resource with given id.
-    public Pizza editPizza(UUID id, Pizza pizza)  {
-        var exist = this.pizzaRepository.existsById(id);
+    public void editPizza(UUID id, PizzaDto pizzaDto)  {
+        checkForOrderExistence(id); //----> Check for existence of pizza with the given id.
 
-        if (!exist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist!");
-        }
+        //System.out.println("Pizza-dto, pizzaDto : " + pizzaDto);
 
-        return this.pizzaRepository.save(pizza);
+        //----> Get the user.
+        var user = this.userRepository.findById((pizzaDto.getUserId())).orElse(null);
+
+        var pizza = pizzaMapper.toEntity(pizzaDto);
+        pizza.setId(id);
+        pizza.setUser(user);
+
+
+        this.pizzaRepository.save(pizza);
     }
 
     //----> Find all resources.
-    public List<Pizza> getAllPizzas(){
-        return this.pizzaRepository.findAll();
+    public List<PizzaDto> getAllPizzas(){
+        var pizzas = this.pizzaRepository.findAll();
+
+        return this.pizzaMapper.toDTOList(pizzas);
     }
 
     //---->
-    public Optional<Pizza> getPizzaById(UUID id)  {
+    public PizzaDto getPizzaById(UUID id)  {
+        checkForOrderExistence(id); //----> Check for existence of pizza with the given id.
+
+        var pizza = this.pizzaRepository.findById(id).orElse(null);
+
+        return this.pizzaMapper.toDTO(pizza);
+    }
+
+    private void checkForOrderExistence(UUID id){
         var exist = this.pizzaRepository.existsById(id);
 
+        //----> Check for existence of order.
         if (!exist){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist!");
+            throw new NotFoundException("Order does not exist!");
         }
-
-        return this.pizzaRepository.findById(id);
     }
 }

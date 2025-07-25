@@ -1,4 +1,5 @@
 package com.alfredamos.meal_order.exceptions;
 
-public class BadCredential {
+public class BadCredentialException extends RuntimeException{
+    private String message;
 }
