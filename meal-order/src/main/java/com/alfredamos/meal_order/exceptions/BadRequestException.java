@@ -1,8 +1,10 @@
 package com.alfredamos.meal_order.exceptions;
 
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+@NoArgsConstructor
 public class BadRequestException extends RuntimeException{
-    private String message;
+    public BadRequestException(String message) {
+        super(message);
+    }
 }

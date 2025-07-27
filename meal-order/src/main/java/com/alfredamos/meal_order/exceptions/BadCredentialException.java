@@ -1,5 +1,11 @@
 package com.alfredamos.meal_order.exceptions;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class BadCredentialException extends RuntimeException{
-    private String message;
+    public BadCredentialException(String message) {
+        super(message);
+
+    }
 }

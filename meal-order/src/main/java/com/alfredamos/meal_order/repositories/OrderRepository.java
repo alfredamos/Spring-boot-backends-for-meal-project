@@ -2,9 +2,7 @@ package com.alfredamos.meal_order.repositories;
 
 import com.alfredamos.meal_order.entities.Order;
 import com.alfredamos.meal_order.entities.User;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

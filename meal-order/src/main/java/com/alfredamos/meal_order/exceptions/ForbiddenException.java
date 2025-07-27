@@ -1,8 +1,11 @@
 package com.alfredamos.meal_order.exceptions;
 
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ForbiddenException extends RuntimeException{
-    private String message;
+    public ForbiddenException(String message) {
+        super(message);
+    }
 }
