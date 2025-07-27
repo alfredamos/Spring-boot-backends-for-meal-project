@@ -88,20 +88,6 @@ public class AuthService {
         return new ResponseMessage("Success", "Your profile is edited successfully!", 200);
     }
 
-    public ResponseMessage login(Login login){
-        //----> Get the email and password from the payload.
-        var email = login.getEmail();
-        var password = login.getPassword();
-
-        //----> Check for the existence of user.
-        var user = foundUserByEmail(email, AuthActionType.edit);
-
-        //----> Check for correct password.
-        checkForCorrectPassword(password, user.getPassword());
-
-        return new ResponseMessage("Success", "Login is successful!", 200);
-    }
-
     public ResponseMessage signup(Signup signup) {
         //----> Get the email, password and confirm-password from the payload.
         var email = signup.getEmail();
