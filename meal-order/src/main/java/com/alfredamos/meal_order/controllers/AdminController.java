@@ -35,6 +35,13 @@ public class AdminController {
 
     }
 
+    @DeleteMapping("/orders/delete-all-orders")
+    public ResponseEntity<ResponseMessage> deleteAllOrders(){
+        var result = this.orderService.deleteAllOrders();
+
+        return ResponseEntity.ok(result);
+    }
+
     @DeleteMapping("/orders/delete-all-orders-by-user-id/{userId}")
     public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable UUID userId){
         var result = this.orderService.deleteOrdersByUser(userId);

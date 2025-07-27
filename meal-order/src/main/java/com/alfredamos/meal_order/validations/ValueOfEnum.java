@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ValueOfEnumValidator.class)
 public @interface ValueOfEnum {
-    Class<? extends Enum<?>> enumClass();
+    Class<ValueOfEnumValidator> enumClass();
     String message() default "Value is not valid for enum.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

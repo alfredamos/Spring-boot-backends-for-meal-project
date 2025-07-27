@@ -3,6 +3,7 @@ package com.alfredamos.meal_order.services;
 
 import com.alfredamos.meal_order.dto.OrderDto;
 import com.alfredamos.meal_order.entities.CartItem;
+import com.alfredamos.meal_order.entities.Order;
 import com.alfredamos.meal_order.exceptions.BadRequestException;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.mapper.CartItemMapper;
@@ -11,12 +12,13 @@ import com.alfredamos.meal_order.mapper.PizzaMapper;
 import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.CartItemRepository;
 import com.alfredamos.meal_order.repositories.OrderRepository;
+import com.alfredamos.meal_order.repositories.PizzaRepository;
+import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,8 @@ public class OrderService {
     private final CartItemMapper cartItemMapper;
     private final UserMapper userMapper;
     private final PizzaMapper pizzaMapper;
+    private final UserRepository userRepository;
+    private final PizzaRepository pizzaRepository;
 
     public OrderDto createOrder(OrderDto orderDto) {
 
@@ -42,12 +46,8 @@ public class OrderService {
             //----> Get the cartItems.
             var cartItems = this.setCartItemList(orderDto);
 
-            var userId = orderDto.getUserId();
-
             //----> Get the user creating the order.
-            var userDto = this.userService.getUserById(userId);
-
-            var user = this.userMapper.toEntity(userDto);
+            var user = this.userRepository.findById(orderDto.getUserId()).orElse(null);
 
             //----> Attache the user to order.
             order.setUser(user);
@@ -61,11 +61,10 @@ public class OrderService {
             var newOrder = this.orderRepository.save(adjustedOrder);
 
             //----> Save the cart-items into the cart-items table.
-            for (CartItem cartItem : cartItems){
+            cartItems.forEach(cartItem -> {
                 cartItem.setOrder(newOrder);
                 this.cartItemRepository.save(cartItem);
-
-            }
+            });
 
             //----> Attach the newly created order to the cart-items.
             newOrder.setCartItems(cartItems);
@@ -94,11 +93,11 @@ public class OrderService {
 
     }
 
+    @Transactional
     public ResponseMessage deleteOrdersByUser(UUID userId){
         //----> Get the user.
-        var userDto = this.userService.getUserById(userId);
-
-        var user = this.userMapper.toEntity(userDto);
+        var user = this.userRepository.findById(userId).orElseThrow();
+        System.out.println("In delete-order-by-userId, user : " + user);
 
         //----> Delete all orders associated with this user.
         this.orderRepository.deleteOrdersByUser(user);
@@ -112,8 +111,18 @@ public class OrderService {
 
         var order = this.orderRepository.findById(id).orElse(null);
 
-        return this.orderMapper.toDTO(order);
+        return this.attachCartItemsDtoToOrderDto(order);
 
+    }
+
+    public ResponseMessage deleteAllOrders(){
+        //----> Delete all associated cart-items.
+        this.cartItemRepository.deleteAllInBatch();
+
+        //----> Delete all orders.
+        this.orderRepository.deleteAllInBatch();
+
+        return new ResponseMessage("Success", "All orders associated with this user are deleted!", 200);
     }
 
     public OrderDto deliveredOrder(UUID orderId){
@@ -135,24 +144,22 @@ public class OrderService {
 
         var editedOrder = this.orderRepository.save(deliveredOrder);
 
-        return this.orderMapper.toDTO(editedOrder);
+        return this.attachCartItemsDtoToOrderDto(editedOrder);
     }
 
     public List<OrderDto> getAllOrdersByUser(UUID userId){
         //----> Get the user associated with the orders.
-        var userDto = this.userService.getUserById(userId);
-
-        var user = this.userMapper.toEntity(userDto);
+        var user = this.userRepository.findById(userId).orElseThrow();
 
         var orders = this.orderRepository.findOrdersByUser(user);
 
-        return this.orderMapper.toDTOList(orders);
+        return orders.stream().map(this::attachCartItemsDtoToOrderDto).toList();
     }
 
     public List<OrderDto> getAllOrders() {
         var orders = this.orderRepository.findAll();
 
-        return this.orderMapper.toDTOList(orders);
+        return orders.stream().map(this::attachCartItemsDtoToOrderDto).toList();
     }
 
     public OrderDto getOrderById(UUID id){
@@ -161,7 +168,8 @@ public class OrderService {
 
         var order = this.orderRepository.findById(id).orElse(null);
 
-        return this.orderMapper.toDTO(order);
+        return this.attachCartItemsDtoToOrderDto(order);
+
     }
 
     public OrderDto shippedOrder(UUID orderId){
@@ -179,7 +187,7 @@ public class OrderService {
 
         var editedOrder = this.orderRepository.save(shippedOrder);
 
-        return this.orderMapper.toDTO(editedOrder);
+        return this.attachCartItemsDtoToOrderDto(editedOrder);
 
     }
 
@@ -197,13 +205,27 @@ public class OrderService {
        return orderDto.getCartItemsDto().stream().map(cartItemDto -> {
            var cartItem = this.cartItemMapper.toEntity(cartItemDto);
 
-           var pizzaDto = this.pizzaService.getPizzaById(cartItemDto.getPizzaId());
+           var pizza = this.pizzaRepository.findById(cartItemDto.getPizzaId()).orElseThrow();
 
-           cartItem.setPizza(this.pizzaMapper.toEntity(pizzaDto));
+           cartItem.setPizza(pizza);
 
            return cartItem;
 
        }).toList();
 
+    }
+
+    public OrderDto attachCartItemsDtoToOrderDto(Order order){
+
+        var cartItems = this.cartItemRepository.findAllByOrder(order);
+
+        //----> Attach the newly created order to the cart-items.
+        order.setCartItems(cartItems);
+
+        //----> Map order to orderDto.
+        var orderDto = this.orderMapper.toDTO(order);
+        orderDto.setCartItemsDto(this.cartItemMapper.toDTOList(cartItems));
+
+        return orderDto;
     }
 }

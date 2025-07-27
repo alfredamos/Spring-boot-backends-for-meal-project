@@ -22,7 +22,7 @@ public class PizzaController {
     private final PizzaService pizzaService;
 
     @GetMapping
-    public ResponseEntity<List<PizzaDto>> getAllPizza() {
+    public ResponseEntity<List<PizzaDto>> getAllPizzas() {
         var pizzasDto = this.pizzaService.getAllPizzas();
 
         return new ResponseEntity<>(pizzasDto, HttpStatus.OK);

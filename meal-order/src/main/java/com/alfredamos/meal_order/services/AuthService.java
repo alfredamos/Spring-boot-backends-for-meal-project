@@ -16,7 +16,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +50,7 @@ public class AuthService {
         checkPasswordMatch(newPassword, confirmPassword);
 
         //----> Check for the existence of user.
-        var user = foundUserByEmail(email);
+        var user = foundUserByEmail(email, AuthActionType.edit);
 
         //----> Check for correct password.
         checkForCorrectPassword(oldPassword, user.getPassword());
@@ -75,7 +74,7 @@ public class AuthService {
         var password = editProfile.getPassword();
 
         //----> Check for the existence of user.
-        var user = foundUserByEmail(email);
+        var user = foundUserByEmail(email, AuthActionType.edit);
 
         //----> Check for correct password.
         checkForCorrectPassword(password, user.getPassword());
@@ -95,7 +94,7 @@ public class AuthService {
         var password = login.getPassword();
 
         //----> Check for the existence of user.
-        var user = foundUserByEmail(email);
+        var user = foundUserByEmail(email, AuthActionType.edit);
 
         //----> Check for correct password.
         checkForCorrectPassword(password, user.getPassword());
@@ -113,7 +112,7 @@ public class AuthService {
        checkPasswordMatch(password, confirmPassword);
 
         //----> Check for the existence of user.
-        var user = foundUserByEmail(email);
+        foundUserByEmail(email, AuthActionType.create);
 
         //----> Check for
         String hashedPassword = passwordEncoder.encode(password);
@@ -148,10 +147,16 @@ public class AuthService {
         }
     }
 
-    private User foundUserByEmail(String email){
+    private User foundUserByEmail(String email, String mode){
         var user = this.authRepository.findUserByEmail(email);
-        if(user == null) {
-            throw new NotFoundException("Invalid credential!");
+        if (mode.equalsIgnoreCase(AuthActionType.edit)) {
+            if (user == null) {
+                throw new NotFoundException("Invalid credential!");
+            }
+        } else if (mode.equalsIgnoreCase(AuthActionType.create)) {
+            if (user != null) {
+                throw new NotFoundException("Invalid credential!");
+            }
         }
 
         return user;
