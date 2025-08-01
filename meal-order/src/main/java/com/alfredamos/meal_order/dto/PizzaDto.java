@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class PizzaDto {
+    @NotBlank(message = "Name is required.")
     private String name;
 
     @NotBlank(message = "Topping is required.")
@@ -31,7 +32,7 @@ public class PizzaDto {
     @NotBlank(message = "Description is required.")
     private String description;
 
-    //@NotBlank(message = "UserId is required.")
+    @NotBlank(message = "UserId is required.")
     private UUID userId;
 
 }

@@ -4,20 +4,24 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, CharSequence> {
+    private List<String> acceptedValues;
 
     @Override
     public void initialize(ValueOfEnum annotation) {
-        List<String> acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
+        acceptedValues = Stream.of(annotation.enumClass().getEnumConstants())
                 .map(Enum::name)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
     public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
-        return false;
+        if (value == null) {
+            return true; // Consider if null is allowed or use @NotNull alongside
+        }
+        return acceptedValues.contains(value.toString());
     }
-
 }

@@ -117,7 +117,7 @@ public class GlobalExceptionHandler {
         }
 
         errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), ex.getMessage());
-        errorDetail.setProperty("description", "Something happen, please try later!.");
+        errorDetail.setProperty("description", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
     }
 
