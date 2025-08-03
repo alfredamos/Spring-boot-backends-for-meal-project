@@ -3,6 +3,7 @@ package com.alfredamos.meal_order.controllers;
 
 import com.alfredamos.meal_order.dto.OrderDto;
 import com.alfredamos.meal_order.exceptions.ForbiddenException;
+import com.alfredamos.meal_order.services.CheckoutSession;
 import com.alfredamos.meal_order.services.OrderService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,11 +24,11 @@ public class OrderController {
     private final OrderService orderService;
     private final OwnerCheck ownerCheck;
 
-    @PatchMapping("/checkout")
-    public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody OrderDto orderDto) {
-        var newOrderDto = this.orderService.createOrder(orderDto);
+    @PostMapping("/checkout")
+    public ResponseEntity<CheckoutSession> createOrder(@Valid @RequestBody OrderDto orderDto) {
+        var checkoutSession = this.orderService.createOrder(orderDto);
 
-        return new ResponseEntity<>(newOrderDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(checkoutSession, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")

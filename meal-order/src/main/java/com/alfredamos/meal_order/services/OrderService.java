@@ -6,6 +6,7 @@ import com.alfredamos.meal_order.entities.CartItem;
 import com.alfredamos.meal_order.entities.Order;
 import com.alfredamos.meal_order.exceptions.BadRequestException;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
+import com.alfredamos.meal_order.exceptions.PaymentException;
 import com.alfredamos.meal_order.mapper.CartItemMapper;
 import com.alfredamos.meal_order.mapper.OrderMapper;
 import com.alfredamos.meal_order.mapper.PizzaMapper;
@@ -15,10 +16,10 @@ import com.alfredamos.meal_order.repositories.OrderRepository;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,8 +38,11 @@ public class OrderService {
     private final PizzaMapper pizzaMapper;
     private final UserRepository userRepository;
     private final PizzaRepository pizzaRepository;
+    private final PaymentGateway paymentGateway;
 
-    public OrderDto createOrder(OrderDto orderDto) {
+
+    @Transactional
+    public CheckoutSession createOrder(OrderDto orderDto) {
 
         if (orderDto.getCartItemsDto() != null) {
             var order = this.orderMapper.toEntity(orderDto);
@@ -58,27 +62,27 @@ public class OrderService {
             var adjustedOrder = order.setNewOrder(user);
 
             //----> Create new order.
-            var newOrder = this.orderRepository.save(adjustedOrder);
+            try{
+                //----> Save the cart-items into the cart-items table.
+                cartItems.forEach(cartItem -> {
+                    cartItem.setOrder(adjustedOrder);
+                });
+                var newOrder = this.orderRepository.save(adjustedOrder);
 
-            //----> Save the cart-items into the cart-items table.
-            cartItems.forEach(cartItem -> {
-                cartItem.setOrder(newOrder);
-                this.cartItemRepository.save(cartItem);
-            });
+                var session = paymentGateway.createCheckoutSession(newOrder);
 
-            //----> Attach the newly created order to the cart-items.
-            newOrder.setCartItems(cartItems);
+                //----> Checkout payment
+               return new CheckoutSession(session.getCheckoutUrl());
+                //return  new CheckoutSession();
+            } catch (PaymentException ex) {
+                throw new PaymentException(ex.getMessage());
+            }
 
-            //----> Map order to orderDto.
-            var newOrderDto = this.orderMapper.toDTO(newOrder);
-            newOrderDto.setCartItemsDto(orderDto.getCartItemsDto());
-
-            return newOrderDto;
 
 
         }
 
-        return new OrderDto();
+        return new CheckoutSession();
     }
 
 

@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 public class MealOrderApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(MealOrderApplication.class, args);
+
+
 	}
 
 }

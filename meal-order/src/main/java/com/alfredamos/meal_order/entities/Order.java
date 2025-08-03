@@ -54,7 +54,7 @@ public class Order {
   private Status status;
 
   @Builder.Default
-  @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE, orphanRemoval = true)
+  @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   private List<CartItem> cartItems = new ArrayList<>();
 
   @ManyToOne()
@@ -104,6 +104,10 @@ public class Order {
     return this;
   }
 
+  public void clearCartItems(){
+    this.cartItems.clear();
+  }
+
   private Integer totalQuantity(){
     return this.cartItems.stream().map(CartItem::getQuantity).reduce(0, Integer::sum);
   }
@@ -111,7 +115,5 @@ public class Order {
   private Double totalPrice(){
     return this.cartItems.stream().map(cart -> cart.getPrice() * cart.getQuantity()).reduce(0.0, Double::sum);
   }
-
-
 
 }

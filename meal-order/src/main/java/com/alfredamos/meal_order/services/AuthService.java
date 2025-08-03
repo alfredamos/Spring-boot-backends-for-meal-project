@@ -141,7 +141,7 @@ public class AuthService {
             }
         } else if (mode.equalsIgnoreCase(AuthActionType.create)) {
             if (user != null) {
-                throw new NotFoundException("Invalid credential!");
+                throw new UnAuthorizedException("Invalid credential!");
             }
         }
 

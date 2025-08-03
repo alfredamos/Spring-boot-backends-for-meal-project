@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 @Table(name = "users")
 @Entity
@@ -46,9 +47,11 @@ public class User {
   private Role role;
 
   @OneToMany(mappedBy = "user", orphanRemoval = true)
+  @ToString.Exclude
   private List<Order> orders;
 
   @OneToMany(mappedBy = "user")
+  @ToString.Exclude
   private List<Pizza> pizzas;
 
 }

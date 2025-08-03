@@ -2,6 +2,8 @@ package com.alfredamos.meal_order.dto;
 
 import com.alfredamos.meal_order.entities.Gender;
 import com.alfredamos.meal_order.validations.ValueOfEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,7 @@ public class UserDto {
     @NotBlank(message = "Image is required.")
     private String image;
 
-    @ValueOfEnum(enumClass = Gender.class, message = "Invalid enum value")
+    @ValueOfEnum(enumClass = Gender.class, message = "It must be either Male of Female!")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 }

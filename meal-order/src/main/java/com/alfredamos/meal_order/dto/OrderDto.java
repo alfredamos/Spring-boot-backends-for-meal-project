@@ -1,10 +1,7 @@
 package com.alfredamos.meal_order.dto;
 
 
-import com.alfredamos.meal_order.entities.Role;
 import com.alfredamos.meal_order.entities.Status;
-import com.alfredamos.meal_order.validations.ValueOfEnum;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +34,6 @@ public class OrderDto {
 
     private Double totalPrice;
 
-    @ValueOfEnum(enumClass = Status.class, message = "Invalid enum value")
     private Status status;
 
     private List<CartItemDto> cartItemsDto;

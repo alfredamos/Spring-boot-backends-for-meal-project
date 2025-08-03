@@ -1,0 +1,21 @@
+package com.alfredamos.meal_order.config;
+
+import com.stripe.Stripe;
+import jakarta.annotation.PostConstruct;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+
+@Data
+@Configuration
+@ConfigurationProperties(prefix = "stripe")
+public class StripeConfig {
+    private String privateKey;
+    private String websiteUrl;
+
+    @PostConstruct
+    public void init(){
+        Stripe.apiKey = privateKey;
+    }
+
+}

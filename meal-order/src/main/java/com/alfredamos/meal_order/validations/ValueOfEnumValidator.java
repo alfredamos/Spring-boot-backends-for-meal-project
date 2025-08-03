@@ -2,12 +2,14 @@ package com.alfredamos.meal_order.validations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, CharSequence> {
+@Component
+public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, Enum> {
     private List<String> acceptedValues;
 
     @Override
@@ -18,7 +20,8 @@ public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, Ch
     }
 
     @Override
-    public boolean isValid(CharSequence value, ConstraintValidatorContext context) {
+    public boolean isValid(Enum value, ConstraintValidatorContext context) {
+        System.out.println("In enum-validator, value : " + value);
         if (value == null) {
             return true; // Consider if null is allowed or use @NotNull alongside
         }

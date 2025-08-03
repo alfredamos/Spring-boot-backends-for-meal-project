@@ -1,9 +1,6 @@
 package com.alfredamos.meal_order.controllers;
 
-import com.alfredamos.meal_order.exceptions.BadRequestException;
-import com.alfredamos.meal_order.exceptions.ForbiddenException;
-import com.alfredamos.meal_order.exceptions.NotFoundException;
-import com.alfredamos.meal_order.exceptions.UnAuthorizedException;
+import com.alfredamos.meal_order.exceptions.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.http.HttpStatus;
@@ -107,6 +104,13 @@ public class GlobalExceptionHandler {
             errorDetail.setProperty("description", "Invalid credentials!");
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetail);
+        }
+
+        if (ex instanceof PaymentException) {
+            errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), ex.getMessage());
+            errorDetail.setProperty("description", ex.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetail);
         }
 
         if (ex instanceof ServerErrorException) {

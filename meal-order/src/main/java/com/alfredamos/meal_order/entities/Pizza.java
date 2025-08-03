@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 @Table(name = "pizzas")
 @Entity
@@ -40,6 +41,7 @@ public class Pizza {
   private String description;
 
   @OneToMany(mappedBy = "pizza")
+  @ToString.Exclude
   private List<CartItem> cartItems = new ArrayList<>();
 
   @ManyToOne

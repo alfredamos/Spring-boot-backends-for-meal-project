@@ -32,7 +32,6 @@ public class PizzaDto {
     @NotBlank(message = "Description is required.")
     private String description;
 
-    @NotBlank(message = "UserId is required.")
     private UUID userId;
 
 }
