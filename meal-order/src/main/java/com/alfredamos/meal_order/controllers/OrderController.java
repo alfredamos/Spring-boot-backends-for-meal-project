@@ -9,9 +9,7 @@ import com.alfredamos.meal_order.services.WebhookRequest;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +44,7 @@ public class OrderController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable UUID id){
         //----> Check for ownership.
-        var orderBySameUser = ownerCheck.compareUserIdForOrder(id);
+        var orderBySameUser = ownerCheck.compareAuthUserIdWithUserIdOnOrder(id);
 
         if (!orderBySameUser.isOwner()){
             throw new ForbiddenException("You are not permitted to delete this order!");
@@ -60,7 +58,7 @@ public class OrderController {
 
     @DeleteMapping("/delete-all-orders-by-user-id/{userId}")
     public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable UUID userId){
-        var isSameUser = ownerCheck.compareUserId(userId);
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
 
         if (!isSameUser){
             throw new ForbiddenException("You are not permitted to view this resource!");
@@ -74,7 +72,7 @@ public class OrderController {
     @PatchMapping("/{id}")
     public ResponseEntity<OrderDto> editOrderById(@PathVariable UUID id){
         //----> Check for ownership.
-        var orderBySameUser = ownerCheck.compareUserIdForOrder(id);
+        var orderBySameUser = ownerCheck.compareAuthUserIdWithUserIdOnOrder(id);
 
         if (!orderBySameUser.isOwner()){
             throw new ForbiddenException("You are not permitted to delete this order!");
@@ -88,7 +86,7 @@ public class OrderController {
 
     @GetMapping("/orders-by-user-id/{userId}")
     public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable UUID userId){
-        var isSameUser = ownerCheck.compareUserId(userId);
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
         if (!isSameUser){
             throw new ForbiddenException("You are not permitted to view this resource!");
         }
@@ -101,7 +99,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable UUID id){
         //----> Check for ownership.
-        var orderBySameUser = ownerCheck.compareUserIdForOrder(id);
+        var orderBySameUser = ownerCheck.compareAuthUserIdWithUserIdOnOrder(id);
 
         if (!orderBySameUser.isOwner()){
             throw new ForbiddenException("You are not permitted to view this order!");

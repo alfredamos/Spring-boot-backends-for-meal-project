@@ -16,7 +16,7 @@ public class OwnerCheck {
     private final OrderService orderService;
     private final UserService userService;
 
-    public boolean compareUserId(UUID userId){
+    public boolean compareAuthUserIdWithParamUserId(UUID userId){
         //----> Get the user id from security context.
         var idOfUser = getUserIdFromContext();
 
@@ -25,7 +25,7 @@ public class OwnerCheck {
 
     }
 
-    public OrderBySameUser compareUserIdForOrder(UUID orderId){
+    public OrderBySameUser compareAuthUserIdWithUserIdOnOrder(UUID orderId){
         //----> Get the user id from security context.
         var idOfUser = getUserIdFromContext();
 

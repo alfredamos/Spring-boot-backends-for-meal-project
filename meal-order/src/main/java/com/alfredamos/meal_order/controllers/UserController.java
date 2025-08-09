@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -25,7 +24,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable UUID id){
-        var isSameUser = ownerCheck.compareUserId(id);
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(id);
         if (!isSameUser){
             throw new ForbiddenException("You are not permitted to view this resource!");
         }
@@ -37,7 +36,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMessage> deleteUserById(@PathVariable UUID id){
-        var isSameUser = ownerCheck.compareUserId(id);
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(id);
         if (!isSameUser){
             throw new ForbiddenException("You are not permitted to delete this resource!");
         }
