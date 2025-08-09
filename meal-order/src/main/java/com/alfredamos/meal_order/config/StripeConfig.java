@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class StripeConfig {
     private String privateKey;
     private String websiteUrl;
+    private String webhookSecretKey;
 
     @PostConstruct
     public void init(){

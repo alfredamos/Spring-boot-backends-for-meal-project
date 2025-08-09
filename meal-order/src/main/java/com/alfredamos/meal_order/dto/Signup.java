@@ -3,8 +3,6 @@ package com.alfredamos.meal_order.dto;
 import com.alfredamos.meal_order.entities.Gender;
 import com.alfredamos.meal_order.entities.Role;
 import com.alfredamos.meal_order.validations.ValueOfEnum;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -1,23 +1,17 @@
 package com.alfredamos.meal_order.services;
 
 import com.alfredamos.meal_order.dto.CartItemDto;
-import com.alfredamos.meal_order.entities.CartItem;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.mapper.CartItemMapper;
 import com.alfredamos.meal_order.repositories.CartItemRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
-@Data
 @AllArgsConstructor
 @Service
 public class CartItemService {

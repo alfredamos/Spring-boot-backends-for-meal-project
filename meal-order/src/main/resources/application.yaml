@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: meal-order
+  datasource:
+    url: jdbc:mysql://localhost:3306/meal-order-db?createDatabaseIfNotExist=true
+    username: ${USER_NAME}
+    password: ${PASSWORD}
+  main:
+    allow-circular-references: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+  jwt:
+    secret: ${JWT_SECRET}
+    accessTokenExpiration: 900
+    refreshTokenExpiration: 604800
+  mvc:
+    view:
+      prefix: /
+stripe:
+  privateKey: ${STRIPE_PRIVATE_KEY}
+  websiteUrl: http://localhost:4200
+  webhookSecretKey: ${STRIPE_WEBHOOK_PRIVATE_KEY}
+
+server:
+  port: 5000
+
+
+

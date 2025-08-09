@@ -2,7 +2,6 @@ package com.alfredamos.meal_order.filters;
 
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class AuthParams {

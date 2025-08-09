@@ -1,26 +1,19 @@
 package com.alfredamos.meal_order.services;
 
 import com.alfredamos.meal_order.dto.PizzaDto;
-import com.alfredamos.meal_order.entities.User;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.mapper.PizzaMapper;
 import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import io.jsonwebtoken.impl.security.EdwardsCurve;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.web.webauthn.management.JdbcPublicKeyCredentialUserEntityRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
 
 
-@Data
 @AllArgsConstructor
 @Service
 public class PizzaService {

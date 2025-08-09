@@ -13,7 +13,6 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,16 +22,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-@Getter
 @RequiredArgsConstructor
 @Service
 public class StripePaymentGateway implements PaymentGateway{
     private final StripeConfig stripeConfig;
     private final OrderRepository orderRepository;
-
-    @Value("${stripe.webhookSecretKey}")
-    private String webhookPrivateKey;
-
 
     @Override
     public CheckoutSession createCheckoutSession(Order order) {
@@ -69,7 +63,7 @@ public class StripePaymentGateway implements PaymentGateway{
             var payload = request.getPayload();
             var signature = request.getHeaders().get("Stripe-Signature");
 
-            var event = Webhook.constructEvent(payload, signature, webhookPrivateKey);
+            var event = Webhook.constructEvent(payload, signature, stripeConfig.getWebhookSecretKey());
 
             switch (event.getType()){
                 case "payment_intent.succeeded" -> {
