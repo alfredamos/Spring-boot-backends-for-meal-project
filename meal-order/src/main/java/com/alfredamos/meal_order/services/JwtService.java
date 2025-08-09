@@ -34,18 +34,19 @@ public class JwtService {
 
             return new Jwt(claims, jwtConfig.getSecretKey());
         }catch (JwtException ex){
-            return null;
+            throw new UnAuthorizedException(ex.getMessage());
         }
     }
 
     private Jwt generateToken(User user, long tokenExpiration) {
+        int milliSeconds = 1000;
         var claims = Jwts.claims()
                 .subject(user.getId() == null ? "" : user.getId().toString())
                 .add("email", user.getEmail())
                 .add("name", user.getName())
                 .add("role", user.getRole())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + tokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + milliSeconds * tokenExpiration))
                 .build();
 
 

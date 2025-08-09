@@ -12,6 +12,6 @@ public class AuthParams {
     public final static String bearer = "Bearer ";
     public final static String role = "ROLE_";
     public final static String accessTokenPath = "/";
-    public final static String refreshTokenPath = "/auth/refresh";
+    public final static String refreshTokenPath = "/api/auth/refresh";
 
 }

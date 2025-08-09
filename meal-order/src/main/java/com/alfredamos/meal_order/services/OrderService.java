@@ -9,33 +9,25 @@ import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.exceptions.PaymentException;
 import com.alfredamos.meal_order.mapper.CartItemMapper;
 import com.alfredamos.meal_order.mapper.OrderMapper;
-import com.alfredamos.meal_order.mapper.PizzaMapper;
-import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.CartItemRepository;
 import com.alfredamos.meal_order.repositories.OrderRepository;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
-    private final UserService userService;
-    private final PizzaService pizzaService;
     private final OrderMapper orderMapper;
     private final CartItemMapper cartItemMapper;
-    private final UserMapper userMapper;
-    private final PizzaMapper pizzaMapper;
     private final UserRepository userRepository;
     private final PizzaRepository pizzaRepository;
     private final PaymentGateway paymentGateway;
@@ -61,24 +53,22 @@ public class OrderService {
 
             var adjustedOrder = order.setNewOrder(user);
 
-            //----> Create new order.
-            try{
-                //----> Save the cart-items into the cart-items table.
-                cartItems.forEach(cartItem -> {
-                    cartItem.setOrder(adjustedOrder);
-                });
-                var newOrder = this.orderRepository.save(adjustedOrder);
+            //----> Save the cart-items into the cart-items table.
+            cartItems.forEach(cartItem -> {
+                cartItem.setOrder(adjustedOrder);
+            });
+            var newOrder = this.orderRepository.save(adjustedOrder);
 
+            try{
+                //----> Checkout order-payment
                 var session = paymentGateway.createCheckoutSession(newOrder);
 
-                //----> Checkout payment
+                //----> Send back checkout order url.
                return new CheckoutSession(session.getCheckoutUrl());
-                //return  new CheckoutSession();
             } catch (PaymentException ex) {
+                orderRepository.delete(newOrder);
                 throw new PaymentException(ex.getMessage());
             }
-
-
 
         }
 
@@ -134,9 +124,8 @@ public class OrderService {
         this.checkForOrderExistence(orderId);
 
         //----> Get the order.
-        var order = this.orderRepository.findById(orderId).orElse(null);
+        var order = this.orderRepository.findById(orderId).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
 
-        assert order != null;
         if (!order.getIsShipped()) {
             throw new BadRequestException("Order must be shipped before delivery, please ship the order!");
         }
@@ -181,10 +170,9 @@ public class OrderService {
         this.checkForOrderExistence(orderId);
 
         //----> Get the order.
-        var order = this.orderRepository.findById(orderId).orElse(null);
+        var order = this.orderRepository.findById(orderId).orElseThrow(() -> new NotFoundException("This order is not found the database!"));
 
         //----> Update the shipping information.
-        assert order != null;
         var shippedOrder = order.shippingInfo();
 
         //----> Update the order in the database.
@@ -192,6 +180,17 @@ public class OrderService {
         var editedOrder = this.orderRepository.save(shippedOrder);
 
         return this.attachCartItemsDtoToOrderDto(editedOrder);
+
+    }
+
+    public void handleWebhook(WebhookRequest request){
+        paymentGateway.parseWebhookRequest(request).ifPresent(paymentResult -> {
+            var order = orderRepository.findById(paymentResult.getOrderId()).orElseThrow();
+
+            order.setStatus(paymentResult.getPaymentStatus());
+
+            orderRepository.save(order);
+        });
 
     }
 
@@ -232,4 +231,5 @@ public class OrderService {
 
         return orderDto;
     }
+
 }

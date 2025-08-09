@@ -148,7 +148,7 @@ public class AuthService {
         return user;
     }
 
-    public Jwt getLoginAccess(Login login, HttpServletResponse response) {
+    public ResponseMessage getLoginAccess(Login login, HttpServletResponse response) {
         //----> Authenticate user.
         this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
@@ -163,6 +163,9 @@ public class AuthService {
         var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)this.jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
         ));
 
+        //----> Add access-cookie to a response object.
+        response.addCookie(accessCookie);
+
         //----> Get refresh-token
         var refreshToken = this.jwtService.generateRefreshToken(user);
 
@@ -170,30 +173,25 @@ public class AuthService {
         var refreshCookie = makeCookie(new CookieParameter(AuthParams.refreshToken, refreshToken, (int)this.jwtConfig.getRefreshTokenExpiration(), AuthParams.refreshTokenPath
                 ));
 
-        //----> Add the two cookies to response as an object.
+        //----> Add refresh-cookie to a response object.
         response.addCookie(refreshCookie);
-        response.addCookie(accessCookie);
 
-        return accessToken;
+        return new ResponseMessage("Success", "Login is successful!", 200);
     }
 
     public void removeLoginAccess(HttpServletResponse response){
-        //----> Remove access-cookie.
-        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, null, 0, AuthParams.accessTokenPath
-        ));
+        //----> Remove accessToken
+        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, null, 0, AuthParams.accessTokenPath));
 
-        //----> Add the two cookies to response as an object.
+        //----> Add access-cookie to a response object.
         response.addCookie(accessCookie);
 
 
         //----> Remove refresh-cookie.
-        var refreshCookie = makeCookie(new CookieParameter(AuthParams.refreshToken, null, 0, AuthParams.refreshTokenPath
-        ));
+        var refreshCookie = makeCookie(new CookieParameter(AuthParams.refreshToken, null, 0, AuthParams.refreshTokenPath));
 
-        //----> Add the two cookies to response as an object.
+        //----> Add refresh-cookie to a response object.
         response.addCookie(refreshCookie);
-
-        response.reset();
 
     }
 
@@ -212,6 +210,7 @@ public class AuthService {
 
     public String getRefreshToken(String refreshToken, HttpServletResponse response){
         var jwt = jwtService.parseToken(refreshToken);
+
         if (jwt == null || jwt.isExpired()){
             throw new UnAuthorizedException("Invalid credentials!");
         }
@@ -230,12 +229,12 @@ public class AuthService {
     }
 
     private Cookie  makeCookie(CookieParameter  cookieParameter){
-        //----> Put the access-token in the access-cookie.
-        var cookie = new Cookie(cookieParameter.getCookieName(), cookieParameter.getCookieValue() == null ? "" : cookieParameter.getCookieValue().toString());
+        //----> Set cookie.
+        var cookie = new Cookie(cookieParameter.getCookieName(), cookieParameter.getCookieValue() == null ? null : cookieParameter.getCookieValue().toString());
 
         cookie.setHttpOnly(true);
         cookie.setPath(cookieParameter.getCookiePath());
-        cookie.setMaxAge(cookieParameter.getExpiration()); //----> For seven days.
+        cookie.setMaxAge(cookieParameter.getExpiration());
         cookie.setSecure(false);
 
         return  cookie;

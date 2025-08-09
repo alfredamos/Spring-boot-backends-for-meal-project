@@ -7,11 +7,8 @@ import com.alfredamos.meal_order.dto.ChangePassword;
 import com.alfredamos.meal_order.dto.EditProfile;
 import com.alfredamos.meal_order.dto.Login;
 import com.alfredamos.meal_order.dto.Signup;
-import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.filters.AuthParams;
-import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.services.AuthService;
-import com.alfredamos.meal_order.services.UserService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -28,8 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-    private final UserService userService;
-    private final UserMapper userMapper;
+    private final OwnerCheck ownerCheck;
 
 
     @PatchMapping("/change-password")
@@ -47,11 +42,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@Valid @RequestBody Login login, HttpServletResponse response){
+    public ResponseEntity<ResponseMessage> login(@Valid @RequestBody Login login, HttpServletResponse response){
 
-        final var accessToken = this.authService.getLoginAccess(login, response);
+        var loginResponse = this.authService.getLoginAccess(login, response);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse(accessToken.toString()));
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 
     }
 
@@ -83,19 +78,6 @@ public class AuthController {
         var userDto = this.authService.getCurrentUser();
 
         return ResponseEntity.ok(userDto);
-    }
-
-    private UserDto getCurrentUser(){
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        var email = (String) authentication.getPrincipal();
-        var userDto = this.userMapper.toDTO(this.userService.getUserByEmail(email));
-
-        if (userDto == null){
-            throw  new NotFoundException("Current user is not found!");
-        }
-
-        return userDto;
     }
 
 }

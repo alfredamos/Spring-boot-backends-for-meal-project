@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
@@ -27,49 +27,56 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        Cookie[] cookies = request.getCookies();
+        var cookies = request.getCookies(); //----> Get all cookies.
+        var accessToken = mySpecificCookieValue(cookies); //----> Get access token
 
-        var token = mySpecificCookieValue(cookies);
+        var requestURI = request.getRequestURI(); //----> Get current uri.
 
-        if (token.isEmpty()) {
-            //throw new UnAuthorizedException("Invalid credential!");
-            var authHeader = request.getHeader(AuthParams.authorization);
-            token = authHeader.replace(AuthParams.bearer, "");
+        //----> Check token only for non-public routes.
+        if(!publicRoutes().contains(requestURI)) {
+            var jwt = jwtService.parseToken(accessToken);
 
+            //----> Check for null and expired jwt object.
+            if (jwt == null || jwt.isExpired()) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            var role = jwt.getUserRole(); //----> Get the role of the current user.
+            var email = jwt.getUserEmail(); //----> Get the email of current user.
+
+            //----> Authenticate the current user.
+            var authentication = new UsernamePasswordAuthenticationToken(
+                    email,
+                    null,
+                    List.of(new SimpleGrantedAuthority(AuthParams.role + role))
+            );
+
+            //----> Set authentication details.
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            //----> Update security context info.
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
-        var jwt = jwtService.parseToken(token);
-
-        if (jwt == null || jwt.isExpired()){
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        var role = jwt.getUserRole();
-        var email = jwt.getUserEmail();
-
-
-        var authentication = new UsernamePasswordAuthenticationToken(
-                email,
-                null,
-                List.of(new SimpleGrantedAuthority(AuthParams.role + role))
-        );
-
-        authentication.setDetails (new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
+
+
     }
 
     private String mySpecificCookieValue(Cookie[] cookies){
-       if (cookies == null || cookies.length == 0) return "";
+        if(cookies == null) return "";
 
-       Optional<String> specificCookieValue = Stream.of(cookies)
-                .filter(cookie -> AuthParams.accessToken.equals(cookie.getName()))
+        return Stream.of(cookies)
+                .filter(cookie -> cookie.getName().equals(AuthParams.accessToken))
                 .map(Cookie::getValue)
-                .findFirst();
+                .findFirst().orElse(null);
 
-        return  specificCookieValue.orElse(null);
     }
+
+    private List<String> publicRoutes(){
+        return Arrays.asList("/api/auth/login", "/api/auth/refresh", "/api/auth/signup", "/api/orders/webhook", "/api/pizzas");
+
+    }
+
 }

@@ -44,11 +44,13 @@ class SecurityConfig {
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(c -> c.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole(Role.Admin.name())
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/orders/webhook").permitAll()
                         .requestMatchers("/api/pizzas").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole(Role.Admin.name())
                         .anyRequest().authenticated()
+
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(c -> {
                     c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
