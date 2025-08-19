@@ -2,19 +2,17 @@ package com.alfredamos.meal_order.controllers;
 
 import com.alfredamos.meal_order.entities.Role;
 import com.alfredamos.meal_order.entities.User;
-import com.alfredamos.meal_order.repositories.OrderRepository;
-import com.alfredamos.meal_order.services.OrderService;
-import com.alfredamos.meal_order.services.UserService;
+import com.alfredamos.meal_order.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 @AllArgsConstructor
 public class OwnerCheck {
-    private final OrderRepository orderRepository;
-    private final OrderService orderService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     public boolean compareAuthUserIdWithParamUserId(UUID userId){
         //----> Get the user id from security context.
@@ -25,22 +23,12 @@ public class OwnerCheck {
 
     }
 
-    public OrderBySameUser compareAuthUserIdWithUserIdOnOrder(UUID orderId){
+    public boolean compareAuthUserIdWithUserIdOnOrder(UUID userIdFromOrder){
         //----> Get the user id from security context.
         var idOfUser = getUserIdFromContext();
 
-        //----> Get the order.
-        var order = orderRepository.findById(orderId).orElseThrow();
-        var userId = order.getUser().getId(); //----> Get the id of the user that made the order.
-
         //----> Compare the two user id for equality.
-        var isOwner = idOfUser.equals(userId);
-
-        //----> Map order to orderDto
-        var orderDto = orderService.attachCartItemsDtoToOrderDto(order);
-
-        return new OrderBySameUser(orderDto, isOwner);
-
+        return idOfUser.equals(userIdFromOrder);
     }
 
     public boolean isAdminUser(){
@@ -56,6 +44,6 @@ public class OwnerCheck {
     private User getCurrentUser(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var email = (String) authentication.getPrincipal();
-        return userService.getUserByEmail(email);
+        return userRepository.findUserByEmail(email);
     }
 }

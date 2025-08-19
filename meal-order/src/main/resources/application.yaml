@@ -3,10 +3,11 @@ spring:
     name: meal-order
   datasource:
     url: jdbc:mysql://localhost:3306/meal-order-db?createDatabaseIfNotExist=true
-    username: ${USER_NAME}
-    password: ${PASSWORD}
+    hikari:
+      username: ${USER_NAME}
+      password: ${PASSWORD}
   main:
-    allow-circular-references: true
+    allow-circulnnar-references: true
   jpa:
     hibernate:
       ddl-auto: update
@@ -23,7 +24,6 @@ stripe:
   privateKey: ${STRIPE_PRIVATE_KEY}
   websiteUrl: http://localhost:4200
   webhookSecretKey: ${STRIPE_WEBHOOK_PRIVATE_KEY}
-
 server:
   port: 5000
 

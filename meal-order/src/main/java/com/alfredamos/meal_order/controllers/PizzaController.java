@@ -3,7 +3,6 @@ package com.alfredamos.meal_order.controllers;
 
 import com.alfredamos.meal_order.dto.PizzaDto;
 import com.alfredamos.meal_order.services.PizzaService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@Tag(name = "pizzas")
 @RestController
 @RequestMapping("/api/pizzas")
 public class PizzaController {

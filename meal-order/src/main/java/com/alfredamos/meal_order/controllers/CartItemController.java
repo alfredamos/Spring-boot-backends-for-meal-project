@@ -3,7 +3,6 @@ package com.alfredamos.meal_order.controllers;
 import com.alfredamos.meal_order.dto.CartItemDto;
 import com.alfredamos.meal_order.services.CartItemService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@Tag(name="cart-items")
 @RestController
 @RequestMapping("/api/cart-items")
 public class CartItemController {

@@ -1,8 +1,10 @@
 package com.alfredamos.meal_order.services;
 
 
+import com.alfredamos.meal_order.controllers.OwnerCheck;
 import com.alfredamos.meal_order.dto.UserDto;
 import com.alfredamos.meal_order.entities.User;
+import com.alfredamos.meal_order.exceptions.ForbiddenException;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.UserRepository;
@@ -20,9 +22,16 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapperImpl;
+    private final OwnerCheck ownerCheck;
 
     //----> Delete a resource with given id.
     public ResponseMessage deleteUser(UUID id)  {
+        //----> Check for ownership
+        var isSameUser =  this.ownerCheck.compareAuthUserIdWithParamUserId(id);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
+
         checkForOrderExistence(id); //----> Check for existence of user with the given id.
 
         //-----> Delete resource.
@@ -41,6 +50,12 @@ public class UserService {
 
     //----> Get user by id.
     public UserDto getUserById(UUID id)  {
+        //----> Check for ownership
+        var isSameUser =  this.ownerCheck.compareAuthUserIdWithParamUserId(id);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
+
         checkForOrderExistence(id); //----> Check for existence of user with the given id.
 
         //----> Get the user by id.

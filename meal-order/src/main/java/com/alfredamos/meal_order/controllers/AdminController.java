@@ -8,7 +8,6 @@ import com.alfredamos.meal_order.services.OrderService;
 import com.alfredamos.meal_order.services.PizzaService;
 import com.alfredamos.meal_order.services.UserService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @RestController
-@Tag(name = "admin")
 @RequestMapping("/api/admin")
 public class AdminController {
     private OrderService orderService;
@@ -47,14 +45,6 @@ public class AdminController {
         var result = this.orderService.deleteOrdersByUser(userId);
 
         return ResponseEntity.ok(result);
-    }
-
-    @PatchMapping("/orders/{id}")
-    public ResponseEntity<OrderDto> editOrderById(@PathVariable UUID id){
-        var orderDto = this.orderService.editOrderById(id);
-
-        return ResponseEntity.ok(orderDto);
-
     }
 
     @GetMapping("/orders")

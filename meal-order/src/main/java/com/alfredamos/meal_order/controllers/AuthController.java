@@ -10,7 +10,6 @@ import com.alfredamos.meal_order.dto.Signup;
 import com.alfredamos.meal_order.filters.AuthParams;
 import com.alfredamos.meal_order.services.AuthService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
-@Tag(name = "auth")
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
@@ -43,9 +41,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseMessage> login(@Valid @RequestBody Login login, HttpServletResponse response){
-
+        //----> Login
         var loginResponse = this.authService.getLoginAccess(login, response);
 
+        //----> Send back the response.
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 
     }
@@ -55,28 +54,35 @@ public class AuthController {
         //----> Delete access-cookie
         authService.removeLoginAccess(response);
 
+        //----> Send back the response.
         return ResponseEntity.ok(new ResponseMessage("Success", "Logout successfully!", 200));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refresh(@CookieValue(value = AuthParams.refreshToken) String refreshToken, HttpServletResponse response){
-       var accessToken = this.authService.getRefreshToken(refreshToken, response); //----> Get access token.
+       //----> Get a refresh-token.
+        var accessToken = this.authService.getRefreshToken(refreshToken, response); //----> Get access token.
 
+        //----> Send back the response.
         return ResponseEntity.ok(new JwtResponse(accessToken));
     }
 
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseMessage> signup(@Valid @RequestBody Signup signup){
+        //----> Signup a new user.
         var result = this.authService.signup(signup);
 
+        //----> Send back the response.
         return  new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> me(){
+        //----> Get the current user.
         var userDto = this.authService.getCurrentUser();
 
+        //----> Send back the response.
         return ResponseEntity.ok(userDto);
     }
 

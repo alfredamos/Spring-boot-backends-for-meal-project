@@ -1,10 +1,12 @@
 package com.alfredamos.meal_order.services;
 
 
+import com.alfredamos.meal_order.controllers.OwnerCheck;
 import com.alfredamos.meal_order.dto.OrderDto;
 import com.alfredamos.meal_order.entities.CartItem;
 import com.alfredamos.meal_order.entities.Order;
 import com.alfredamos.meal_order.exceptions.BadRequestException;
+import com.alfredamos.meal_order.exceptions.ForbiddenException;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
 import com.alfredamos.meal_order.exceptions.PaymentException;
 import com.alfredamos.meal_order.mapper.CartItemMapper;
@@ -14,14 +16,14 @@ import com.alfredamos.meal_order.repositories.OrderRepository;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -31,6 +33,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PizzaRepository pizzaRepository;
     private final PaymentGateway paymentGateway;
+    private final OwnerCheck ownerCheck;
 
 
     @Transactional
@@ -78,7 +81,12 @@ public class OrderService {
 
     public ResponseMessage deleteOrderById(UUID id){
         //----> Check for existence of order.
-        this.checkForOrderExistence(id);
+        var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
+
+        //----> Check for ownership.
+        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getId())){
+            throw new ForbiddenException("You are not authorized to delete this order!");
+        }
 
         //----> Delete the order with given id from the database.
         this.orderRepository.deleteById(id);
@@ -89,6 +97,11 @@ public class OrderService {
 
     @Transactional
     public ResponseMessage deleteOrdersByUser(UUID userId){
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
+
         //----> Get the user.
         var user = this.userRepository.findById(userId).orElseThrow();
         System.out.println("In delete-order-by-userId, user : " + user);
@@ -97,16 +110,6 @@ public class OrderService {
         this.orderRepository.deleteOrdersByUser(user);
 
         return new ResponseMessage("Success", "All orders associated with this user are deleted!", 200);
-    }
-
-    public OrderDto editOrderById(UUID id){
-        //----> Check for existence of order.
-        this.checkForOrderExistence(id);
-
-        var order = this.orderRepository.findById(id).orElse(null);
-
-        return this.attachCartItemsDtoToOrderDto(order);
-
     }
 
     public ResponseMessage deleteAllOrders(){
@@ -141,6 +144,11 @@ public class OrderService {
     }
 
     public List<OrderDto> getAllOrdersByUser(UUID userId){
+        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
+        if (!isSameUser){
+            throw new ForbiddenException("You are not permitted to view this resource!");
+        }
+
         //----> Get the user associated with the orders.
         var user = this.userRepository.findById(userId).orElseThrow();
 
@@ -157,9 +165,12 @@ public class OrderService {
 
     public OrderDto getOrderById(UUID id){
         //----> Check for existence of order.
-        this.checkForOrderExistence(id);
+        var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
 
-        var order = this.orderRepository.findById(id).orElse(null);
+        //----> Check for ownership.
+        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getId())){
+            throw new ForbiddenException("You are not authorized to delete this order!");
+        }
 
         return this.attachCartItemsDtoToOrderDto(order);
 
