@@ -84,7 +84,7 @@ public class OrderService {
         var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
 
         //----> Check for ownership.
-        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getId())){
+        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getUser().getId())){
             throw new ForbiddenException("You are not authorized to delete this order!");
         }
 
@@ -168,7 +168,7 @@ public class OrderService {
         var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
 
         //----> Check for ownership.
-        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getId())){
+        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getUser().getId())){
             throw new ForbiddenException("You are not authorized to delete this order!");
         }
 
