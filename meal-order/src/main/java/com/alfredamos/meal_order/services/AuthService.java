@@ -34,7 +34,6 @@ public class AuthService {
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtConfig jwtConfig;
-    private final JwtConfig JwtConfig;
 
 
     public ResponseMessage changePassword(ChangePassword changePassword){

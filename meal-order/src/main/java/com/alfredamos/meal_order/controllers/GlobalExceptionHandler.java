@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleSecurityException(Exception ex) {
-        ProblemDetail errorDetail = null;
+        ProblemDetail errorDetail;
 
         // TODO send this stack trace to an observability tool
        //exception.printStackTrace()

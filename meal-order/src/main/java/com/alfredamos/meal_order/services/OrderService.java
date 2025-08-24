@@ -1,7 +1,6 @@
 package com.alfredamos.meal_order.services;
 
 
-import com.alfredamos.meal_order.controllers.OwnerCheck;
 import com.alfredamos.meal_order.dto.OrderDto;
 import com.alfredamos.meal_order.entities.CartItem;
 import com.alfredamos.meal_order.entities.Order;
@@ -16,14 +15,14 @@ import com.alfredamos.meal_order.repositories.OrderRepository;
 import com.alfredamos.meal_order.repositories.PizzaRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
-import lombok.AllArgsConstructor;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -33,32 +32,29 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PizzaRepository pizzaRepository;
     private final PaymentGateway paymentGateway;
-    private final OwnerCheck ownerCheck;
 
 
-    @Transactional
-    public CheckoutSession createOrder(OrderDto orderDto) {
-
+    @jakarta.transaction.Transactional
+    public CheckoutSession checkoutOrder(OrderDto orderDto) {
+        System.out.println("At point 2, checkoutOrder, orderDto = " + orderDto);
         if (orderDto.getCartItemsDto() != null) {
+            //----> Mapped orderDto to order.
             var order = this.orderMapper.toEntity(orderDto);
 
             //----> Get the cartItems.
-            var cartItems = this.setCartItemList(orderDto);
+            var orderDetails = this.setCartItemList(orderDto);
 
             //----> Get the user creating the order.
             var user = this.userRepository.findById(orderDto.getUserId()).orElse(null);
 
-            //----> Attache the user to order.
-            order.setUser(user);
-
-            //----> Attach the cart-items to the order.
-            order.setCartItems(cartItems);
+            //----> Attach the order-details to the order.
+            order.setCartItems(orderDetails);
 
             var adjustedOrder = order.setNewOrder(user);
 
             //----> Save the cart-items into the cart-items table.
-            cartItems.forEach(cartItem -> {
-                cartItem.setOrder(adjustedOrder);
+            orderDetails.forEach(orderDetail -> {
+                orderDetail.setOrder(adjustedOrder);
             });
             var newOrder = this.orderRepository.save(adjustedOrder);
 
@@ -67,7 +63,7 @@ public class OrderService {
                 var session = paymentGateway.createCheckoutSession(newOrder);
 
                 //----> Send back checkout order url.
-               return new CheckoutSession(session.getCheckoutUrl());
+                return new CheckoutSession(session.getCheckoutUrl());
             } catch (PaymentException ex) {
                 orderRepository.delete(newOrder);
                 throw new PaymentException(ex.getMessage());
@@ -79,13 +75,10 @@ public class OrderService {
     }
 
 
-    public ResponseMessage deleteOrderById(UUID id){
-        //----> Check for existence of order.
-        var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
-
-        //----> Check for ownership.
-        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getUser().getId())){
-            throw new ForbiddenException("You are not authorized to delete this order!");
+    public ResponseMessage deleteOrderById(UUID id, boolean canDeleteAndView){
+        //----> Check for ownership or admin privilege.
+        if (!canDeleteAndView) {
+            throw new ForbiddenException("User doesn't have permission to remove this order");
         }
 
         //----> Delete the order with given id from the database.
@@ -96,10 +89,10 @@ public class OrderService {
     }
 
     @Transactional
-    public ResponseMessage deleteOrdersByUser(UUID userId){
-        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
-        if (!isSameUser){
-            throw new ForbiddenException("You are not permitted to view this resource!");
+    public ResponseMessage deleteOrdersByUserId(UUID userId, boolean canDeleteAndView){
+        //----> Check for ownership or admin privilege.
+        if (!canDeleteAndView) {
+            throw new ForbiddenException("User doesn't have permission to remove this order");
         }
 
         //----> Get the user.
@@ -111,6 +104,7 @@ public class OrderService {
 
         return new ResponseMessage("Success", "All orders associated with this user are deleted!", 200);
     }
+
 
     public ResponseMessage deleteAllOrders(){
         //----> Delete all associated cart-items.
@@ -143,10 +137,10 @@ public class OrderService {
         return this.attachCartItemsDtoToOrderDto(editedOrder);
     }
 
-    public List<OrderDto> getAllOrdersByUser(UUID userId){
-        var isSameUser = ownerCheck.compareAuthUserIdWithParamUserId(userId);
-        if (!isSameUser){
-            throw new ForbiddenException("You are not permitted to view this resource!");
+    public List<OrderDto> getAllOrdersByUserById(UUID userId, boolean canDeleteAndView){
+        //----> Check for ownership or admin privilege.
+        if (!canDeleteAndView) {
+            throw new ForbiddenException("you don't have permission to view these orders");
         }
 
         //----> Get the user associated with the orders.
@@ -163,14 +157,13 @@ public class OrderService {
         return orders.stream().map(this::attachCartItemsDtoToOrderDto).toList();
     }
 
-    public OrderDto getOrderById(UUID id){
-        //----> Check for existence of order.
-        var order =  this.orderRepository.findById(id).orElseThrow(() ->  new NotFoundException("This order is not found the database!"));
-
-        //----> Check for ownership.
-        if (!ownerCheck.compareAuthUserIdWithUserIdOnOrder(order.getUser().getId())){
-            throw new ForbiddenException("You are not authorized to delete this order!");
+    public OrderDto getOrderById(UUID id, boolean canDeleteAndView){
+        //----> Check for ownership or admin privilege.
+        if (!canDeleteAndView) {
+            throw new ForbiddenException("you don't have permission to view these orders");
         }
+
+        var order = this.orderRepository.findById(id).orElse(null);
 
         return this.attachCartItemsDtoToOrderDto(order);
 
@@ -215,32 +208,43 @@ public class OrderService {
     }
 
     private List<CartItem> setCartItemList(OrderDto orderDto){
-       //----> Map the cart-items-dto to cart-items with the associated pizzas.
-       return orderDto.getCartItemsDto().stream().map(cartItemDto -> {
-           var cartItem = this.cartItemMapper.toEntity(cartItemDto);
+        //----> Map the cart-items-dto to cart-items with the associated pizzas.
+        return orderDto.getCartItemsDto().stream().map(cartItemDto -> {
+            var cartItem = this.cartItemMapper.toEntity(cartItemDto);
 
-           var pizza = this.pizzaRepository.findById(cartItemDto.getPizzaId()).orElseThrow();
+            var pizza = this.pizzaRepository.findById(cartItemDto.getPizzaId()).orElseThrow();
 
-           cartItem.setPizza(pizza);
+            cartItem.setPizza(pizza);
+            return cartItem;
 
-           return cartItem;
 
-       }).toList();
+        }).toList();
 
     }
 
-    public OrderDto attachCartItemsDtoToOrderDto(Order order){
+    public Order getOneOrder(UUID id){
+        //----> Get the order with given id.
+        return orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found"));
+    }
+
+    private OrderDto attachCartItemsDtoToOrderDto(Order order){
 
         var cartItems = this.cartItemRepository.findAllByOrder(order);
 
-        //----> Attach the newly created order to the cart-items.
+        //----> Attach the newly created order to the cart-items.n
         order.setCartItems(cartItems);
 
         //----> Map order to orderDto.
         var orderDto = this.orderMapper.toDTO(order);
+
+        //----> Set user-id.
+        orderDto.setUserId(order.getUser().getId());
+
+        //----> Set order-details.
         orderDto.setCartItemsDto(this.cartItemMapper.toDTOList(cartItems));
 
         return orderDto;
     }
 
 }
+

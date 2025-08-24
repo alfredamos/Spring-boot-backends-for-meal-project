@@ -21,108 +21,162 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-    private OrderService orderService;
-    private PizzaService pizzaService;
-    private UserService userService;
+    private final OrderService orderService;
+    private final OwnerCheck  ownerCheck;
+    private final UserService userService;
+    private final PizzaService pizzaService;
 
-    @DeleteMapping("/orders/{id}")
-    public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable UUID id){
-        var result = this.orderService.deleteOrderById(id);
+    //----> Pizzas ***************************************************************************
+    @PostMapping("/pizzas")
+    public ResponseEntity<PizzaDto> createPizza(@Valid @RequestBody PizzaDto pizzaDto) {
+        //----> Create a new pizza.
+        var response = pizzaService.createPizza(pizzaDto);
 
-        return ResponseEntity.ok(result);
-
+        //----> Send back the response.
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/orders/delete-all-orders")
-    public ResponseEntity<ResponseMessage> deleteAllOrders(){
-        var result = this.orderService.deleteAllOrders();
+    @DeleteMapping("/pizzas/{id}")
+    public ResponseEntity<?> deleteMenu(@PathVariable(name = "id") UUID id) {
+        System.out.println("Deleting Menu Item, id: " + id);
+        //----> Delete the menu with the given id.
+        var response = pizzaService.deletePizza(id);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/pizzas/{id}")
+    public ResponseEntity<?> editMenu(@PathVariable(name = "id") UUID id, @Valid @RequestBody PizzaDto pizzaDto) {
+        //----> Update the menu with the given id.
+        var response = pizzaService.editPizza(id, pizzaDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/pizzas")
+    public ResponseEntity<List<PizzaDto>> findAllMenus() {
+        //----> Retrieve all the pizzas.
+        var response = pizzaService.getAllPizzas();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/pizzas/{id}")
+    public ResponseEntity<PizzaDto> findMenuById(@PathVariable(name = "id") UUID id) {
+        //----> Retrieve all the pizzas.
+        var response = pizzaService.getPizzaById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    //----> *********************************************************************************
+
+    //----> Orders @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @DeleteMapping("/orders/delete-all-orders")
+    public ResponseEntity<ResponseMessage> deleteAllOrders() {
+        //----> Delete all orders.
+        var orders = orderService.deleteAllOrders();
+
+        //----> Send back the response.
+        return ResponseEntity.ok(orders);
+    }
+
+    @DeleteMapping("/orders/{id}")
+    public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable(name = "id") UUID id){
+        //----> Check for existence of order.
+        orderService.getOneOrder(id);
+
+        //----> Delete the order with given id.
+        var response = orderService.deleteOrderById(id, ownerCheck.isAdminUser());
+
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PatchMapping("/orders/delivered/{id}")
+    public ResponseEntity<OrderDto> deliveredOrderById(@PathVariable(name = "id") UUID id){
+        //----> Mark the order with the given id delivered.
+        var order = orderService.deliveredOrder(id);
+
+        //----> Send back the response.
+        return ResponseEntity.ok(order);
     }
 
     @DeleteMapping("/orders/delete-all-orders-by-user-id/{userId}")
-    public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable UUID userId){
-        var result = this.orderService.deleteOrdersByUser(userId);
+    public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable(name = "userId") UUID userId){
+        //----> Delete the order with given id.
+        var response = orderService.deleteOrdersByUserId(userId, ownerCheck.isAdminUser());
 
-        return ResponseEntity.ok(result);
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderDto>> getAllOrders(){
-        var ordersDto = this.orderService.getAllOrders();
+        //----> Get all orders.
+        var orders = orderService.getAllOrders();
 
-        return ResponseEntity.ok(ordersDto);
-    }
-
-    @GetMapping("orders/orders-by-user-id/{userId}")
-    public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable UUID userId){
-        var ordersDto = this.orderService.getAllOrdersByUser(userId);
-
-        return ResponseEntity.ok(ordersDto);
+        //----> Send back the response.
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/orders/{id}")
-    public ResponseEntity<OrderDto> getOrderById(@PathVariable UUID id){
-        var orderDto = this.orderService.getOrderById(id);
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable(name = "id") UUID id){
+        //----> Check for existence of order.
+        orderService.getOneOrder(id);
 
-        return ResponseEntity.ok(orderDto);
+        //----> Delete the order with given id.
+        var response = orderService.getOrderById(id, ownerCheck.isAdminUser());
+
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
 
-    @PatchMapping("/orders/delivered/{id}")
-    public ResponseEntity<OrderDto> orderDelivered(@PathVariable UUID id){
-        var orderDto = this.orderService.deliveredOrder(id);
+    @GetMapping("/orders/orders-by-user-id/{userId}")
+    public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable(name = "userId") UUID userId){
+        //----> Delete the order with given id.
+        var response = orderService.getAllOrdersByUserById(userId, ownerCheck.isAdminUser());
 
-        return ResponseEntity.ok(orderDto);
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
 
     @PatchMapping("/orders/shipped/{id}")
-    public ResponseEntity<OrderDto> orderShipped(@PathVariable UUID id){
-        var orderDto = this.orderService.shippedOrder(id);
+    public ResponseEntity<OrderDto> shippedOrderById(@PathVariable(name = "id") UUID id){
+        //----> Mark the order with the given id shipped.
+        var order = orderService.shippedOrder(id);
 
-        return ResponseEntity.ok(orderDto);
+        //----> Send back the response.
+        return ResponseEntity.ok(order);
     }
 
-    @PostMapping("/pizzas")
-    public ResponseEntity<PizzaDto> createPizza(@Valid @RequestBody PizzaDto pizzaDto){
-        this.pizzaService.createPizza(pizzaDto);
+    //----> @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-        return  new ResponseEntity<>(pizzaDto, HttpStatus.CREATED);
-    }
+    //----> Users ############################################################################
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ResponseMessage> deleteUserById(@PathVariable(name = "id") UUID id){
+        //----> Delete the user with the given id.
+        var response = userService.deleteUserById(id, ownerCheck.isAdminUser());
 
-    @DeleteMapping("/pizzas/{id}")
-    public ResponseEntity<ResponseMessage> deletePizza(@PathVariable UUID id){
-        var result = this.pizzaService.deletePizza(id);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @PatchMapping("/pizzas/{id}")
-    public ResponseEntity<PizzaDto> editPizza(@PathVariable UUID id, @Valid @RequestBody PizzaDto pizzaDto){
-        this.pizzaService.editPizza(id, pizzaDto);
-
-        return new ResponseEntity<>(pizzaDto, HttpStatus.OK);
+        //----> Send back the response.
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> getAllUsers(){
-        var usersDto = this.userService.getAllUsers();
+        //----> Delete the user with the given id.
+        var response = userService.getAllUsers();
 
-        return new ResponseEntity<>(usersDto, HttpStatus.OK);
+        //----> Send back the response.
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id){
-        var userDto = this.userService.getUserById(id);
+    public ResponseEntity<UserDto> getUserById(@PathVariable(name = "id") UUID id){
+        //----> Delete the user with the given id.
+        var response = userService.getUserById(id, ownerCheck.isAdminUser());
 
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
-
+        //----> Send back the response.
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<ResponseMessage> deleteUserById(@PathVariable UUID id){
-        var responseMessage = this.userService.deleteUser(id);
-
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-    }
+    //----> ################################################################################
 
 }

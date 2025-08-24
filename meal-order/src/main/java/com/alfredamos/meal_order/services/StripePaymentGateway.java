@@ -5,7 +5,6 @@ import com.alfredamos.meal_order.entities.CartItem;
 import com.alfredamos.meal_order.entities.Order;
 import com.alfredamos.meal_order.entities.Status;
 import com.alfredamos.meal_order.exceptions.PaymentException;
-import com.alfredamos.meal_order.repositories.OrderRepository;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -14,7 +13,6 @@ import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +24,6 @@ import java.util.UUID;
 @Service
 public class StripePaymentGateway implements PaymentGateway{
     private final StripeConfig stripeConfig;
-    private final OrderRepository orderRepository;
 
     @Override
     public CheckoutSession createCheckoutSession(Order order) {
@@ -76,7 +73,7 @@ public class StripePaymentGateway implements PaymentGateway{
                     return Optional.of(new PaymentResult(extractOrderId(event), Status.Failed));
                 }
 
-            };
+            }
 
            return Optional.empty();
 

@@ -57,7 +57,7 @@ public class JwtService {
 
         }
 
-        return (Claims) Jwts.parser()
+        return Jwts.parser()
                 .verifyWith(jwtConfig.getSecretKey())
                 .build()
                 .parseSignedClaims(token)

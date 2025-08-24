@@ -104,9 +104,6 @@ public class Order {
     return this;
   }
 
-  public void clearCartItems(){
-    this.cartItems.clear();
-  }
 
   private Integer totalQuantity(){
     return this.cartItems.stream().map(CartItem::getQuantity).reduce(0, Integer::sum);

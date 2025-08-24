@@ -17,5 +17,4 @@ public interface CartItemMapper {
 
     List<CartItemDto> toDTOList(List<CartItem> cartItems);
 
-    List<CartItem> toEntityList(List<CartItemDto> cartItemDtos);
 }

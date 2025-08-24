@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-    private final OwnerCheck ownerCheck;
 
 
     @PatchMapping("/change-password")

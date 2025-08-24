@@ -5,7 +5,6 @@ import com.alfredamos.meal_order.dto.UserDto;
 import com.alfredamos.meal_order.services.UserService;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,24 +15,26 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id){
-        //----> Get the user by id.
-        var userDto = this.userService.getUserById(id);
-
-        //----> Send back the response.
-        return new ResponseEntity<>(userDto, HttpStatus.OK);
-        
-    }
+    private final OwnerCheck  ownerCheck;
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseMessage> deleteUserById(@PathVariable UUID id){
+    public ResponseEntity<ResponseMessage> deleteUserById(@PathVariable(name = "id") UUID id){
         //----> Delete the user with the given id.
-        var responseMessage = this.userService.deleteUser(id);
+        var response = userService.deleteUserById(id, ownerCheck.userIdMatchesContextUserId(id));
 
         //----> Send back the response.
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable(name = "id") UUID id){
+        //----> Delete the user with the given id.
+        var response = userService.getUserById(id, ownerCheck.userIdMatchesContextUserId(id));
+
+        //----> Send back the response.
+        return ResponseEntity.ok(response);
+    }
+
+
 
 }

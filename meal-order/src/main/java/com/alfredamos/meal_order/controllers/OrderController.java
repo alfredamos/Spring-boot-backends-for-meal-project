@@ -4,73 +4,74 @@ package com.alfredamos.meal_order.controllers;
 import com.alfredamos.meal_order.dto.OrderDto;
 import com.alfredamos.meal_order.services.CheckoutSession;
 import com.alfredamos.meal_order.services.OrderService;
-import com.alfredamos.meal_order.services.WebhookRequest;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
     private final OrderService orderService;
+    private final OwnerCheck  ownerCheck;
 
     @PostMapping("/checkout")
-    public ResponseEntity<CheckoutSession> createOrder(@Valid @RequestBody OrderDto orderDto) {
-        var checkoutSession = this.orderService.createOrder(orderDto);
+    public ResponseEntity<CheckoutSession> checkoutOrder(@Valid @RequestBody OrderDto orderDto){
+        System.out.println("At point 1, checkoutOrder, orderDto = " + orderDto);
+        //----> Checkout your order.
+        var orderCheckoutsession = orderService.checkoutOrder(orderDto);
 
-        return new ResponseEntity<>(checkoutSession, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/webhook")
-    public ResponseEntity<Void> handleWebhook(@RequestHeader Map<String, String> headers, @RequestBody String payload) {
-        orderService.handleWebhook(new WebhookRequest(headers, payload));
-
-        return ResponseEntity.ok().body(null);
+        //----> send back the response.
+        return ResponseEntity.ok().body(orderCheckoutsession);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable UUID id){
-    //----> Delete the order.
-    var result = this.orderService.deleteOrderById(id);
+    public ResponseEntity<ResponseMessage> deleteOrderById(@PathVariable(name = "id") UUID id) {
+        //----> Get the order with given id.
+        var order = orderService.getOneOrder(id);
 
-    //----> Send back the response4.
-    return ResponseEntity.ok(result);
+        //----> Delete the order with given id.
+        var response = orderService.deleteOrderById(id, ownerCheck.userIdMatchesContextUserId(order.getUser().getId()));
 
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/delete-all-orders-by-user-id/{userId}")
-    public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable UUID userId){
-        //----> Delete all orders attach to the user with the given id.
-        var result = this.orderService.deleteOrdersByUser(userId);
+    public ResponseEntity<ResponseMessage> deleteOrdersByUserId(@PathVariable(name = "userId") UUID userId) {
+        //----> Delete the order with given id.
+        var response = orderService.deleteOrdersByUserId(userId, ownerCheck.userIdMatchesContextUserId(userId));
 
-        //----> Send back the response.
-        return ResponseEntity.ok(result);
-    }
-
-
-    @GetMapping("/orders-by-user-id/{userId}")
-    public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable UUID userId){
-        //----> Get all orders attach with user-id.
-        var ordersDto = this.orderService.getAllOrdersByUser(userId);
-
-        //----> Send back the response.
-        return ResponseEntity.ok(ordersDto);
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrderById(@PathVariable UUID id){
-        //----> Get the order
-        var orderDto = orderService.getOrderById(id);
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable(name = "id") UUID id) {
+        //----> Get the order with given id.
+        var order = orderService.getOneOrder(id);
 
-        return ResponseEntity.ok(orderDto);
+
+        //----> Delete the order with given id.
+        var response = orderService.getOrderById(id, ownerCheck.userIdMatchesContextUserId(order.getUser().getId()));
+
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/orders-by-user-id/{userId}")
+    public ResponseEntity<List<OrderDto>> getAllOrdersByUserId(@PathVariable(name = "userId") UUID userId) {
+        //----> Delete the order with given id.
+        var response = orderService.getAllOrdersByUserById(userId, ownerCheck.userIdMatchesContextUserId(userId));
+
+        //----> send back the response.
+        return ResponseEntity.ok().body(response);
+    }
+
 
 }

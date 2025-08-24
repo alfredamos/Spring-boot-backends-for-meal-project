@@ -6,8 +6,6 @@ spring:
     hikari:
       username: ${USER_NAME}
       password: ${PASSWORD}
-  main:
-    allow-circulnnar-references: true
   jpa:
     hibernate:
       ddl-auto: update
