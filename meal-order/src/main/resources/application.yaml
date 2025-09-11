@@ -3,9 +3,8 @@ spring:
     name: meal-order
   datasource:
     url: jdbc:mysql://localhost:3306/meal-order-db?createDatabaseIfNotExist=true
-    hikari:
-      username: ${USER_NAME}
-      password: ${PASSWORD}
+    username: ${USER_NAME}
+    password: ${PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
