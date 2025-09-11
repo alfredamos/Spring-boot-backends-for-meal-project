@@ -113,38 +113,6 @@ public class AuthService {
         return new ResponseMessage("Success", "Signup is successful!", 201);
     }
 
-    private void checkPasswordMatch(String password, String confirmPassword){
-        //----> Check for match between confirm-password and password.
-        var isMatch = confirmPassword.equals(password);
-
-        if (!isMatch){
-            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must match!");
-            throw new BadRequestException("Password must match!");
-        }
-    }
-
-    private void checkForCorrectPassword(CharSequence rawPassword, String storedPassword){
-        var isCorrectPassword = this.passwordEncoder.matches(rawPassword, storedPassword);
-        if (!isCorrectPassword){
-            throw new UnAuthorizedException("Invalid credential!");
-        }
-    }
-
-    private User foundUserByEmail(String email, String mode){
-        var user = this.authRepository.findUserByEmail(email);
-        if (mode.equalsIgnoreCase(AuthActionType.edit)) {
-            if (user == null) {
-                throw new NotFoundException("Invalid credential!");
-            }
-        } else if (mode.equalsIgnoreCase(AuthActionType.create)) {
-            if (user != null) {
-                throw new UnAuthorizedException("Invalid credential!");
-            }
-        }
-
-        return user;
-    }
-
     public ResponseMessage getLoginAccess(Login login, HttpServletResponse response) {
         //----> Authenticate user.
         this.authenticationManager.authenticate(
@@ -223,6 +191,38 @@ public class AuthService {
         response.addCookie(accessCookie);
 
         return  accessToken.toString();
+    }
+
+    private void checkPasswordMatch(String password, String confirmPassword){
+        //----> Check for match between confirm-password and password.
+        var isMatch = confirmPassword.equals(password);
+
+        if (!isMatch){
+            //throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must match!");
+            throw new BadRequestException("Password must match!");
+        }
+    }
+
+    private void checkForCorrectPassword(CharSequence rawPassword, String storedPassword){
+        var isCorrectPassword = this.passwordEncoder.matches(rawPassword, storedPassword);
+        if (!isCorrectPassword){
+            throw new UnAuthorizedException("Invalid credential!");
+        }
+    }
+
+    private User foundUserByEmail(String email, String mode){
+        var user = this.authRepository.findUserByEmail(email);
+        if (mode.equalsIgnoreCase(AuthActionType.edit)) {
+            if (user == null) {
+                throw new NotFoundException("Invalid credential!");
+            }
+        } else if (mode.equalsIgnoreCase(AuthActionType.create)) {
+            if (user != null) {
+                throw new UnAuthorizedException("Invalid credential!");
+            }
+        }
+
+        return user;
     }
 
     private Cookie  makeCookie(CookieParameter  cookieParameter){
