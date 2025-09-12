@@ -77,8 +77,9 @@ public class AuthService {
         checkForCorrectPassword(password, user.getPassword());
 
         //----> save the change in profile into the database.
+        editProfile.setPassword(user.getPassword());
         var userPayload = this.authMapper.toEntity(editProfile);
-        //var userPayload = this.getUserFromEditProfile(editProfile, user);
+
         userPayload.setId(user.getId());
         authRepository.save(userPayload);
 
