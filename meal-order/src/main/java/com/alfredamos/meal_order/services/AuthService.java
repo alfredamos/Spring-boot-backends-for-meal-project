@@ -153,7 +153,7 @@ public class AuthService {
 
         token.setTokenType(TokenType.Bearer);
         token.setExpired(false);
-        token.setExpired(false);
+        token.setRevoked(false);
 
         System.out.println("token : " + token);
 
