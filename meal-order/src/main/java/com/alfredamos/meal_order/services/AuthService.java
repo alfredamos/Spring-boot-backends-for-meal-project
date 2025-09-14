@@ -251,36 +251,16 @@ public class AuthService {
     }
 
 
-//    public String getRefreshToken(String refreshToken, HttpServletResponse response){
-//        var jwt = jwtService.parseToken(refreshToken);
-//
-//        if (jwt == null || jwt.isExpired()){
-//            throw new UnAuthorizedException("Invalid credentials!");
-//        }
-//
-//        var user = this.userRepository.findById(jwt.getUserId()).orElseThrow();
-//
-//        var accessToken = jwtService.generateAccessToken(user);
-//
-//        //----> Put the access-token in the access-cookie.
-//        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)this.jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
-//        ));
-//
-//        response.addCookie(accessCookie);
-//
-//        return  accessToken.toString();
-//    }
-
     public void revokedAllUserTokens(User user){
         var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
 
-        if (!validUserTokens.isEmpty()){
-            validUserTokens.forEach(token -> {
-                token.setRevoked(true);
-                token.setRevoked(false);
-            });
-            tokenRepository.saveAll(validUserTokens);
-        }
+        if (validUserTokens.isEmpty()) return;
+        validUserTokens.forEach(token -> {
+            token.setExpired(true);
+            token.setRevoked(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
+
 
     }
 
