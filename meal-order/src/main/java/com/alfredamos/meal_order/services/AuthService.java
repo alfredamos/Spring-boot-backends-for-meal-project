@@ -171,22 +171,6 @@ public class AuthService {
         return new ResponseMessage("Success", "Login is successful!", 200);
     }
 
-    public void removeLoginAccess(HttpServletResponse response){
-        //----> Remove accessToken
-        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, null, 0, AuthParams.accessTokenPath));
-
-        //----> Add access-cookie to a response object.
-        response.addCookie(accessCookie);
-
-
-        //----> Remove refresh-cookie.
-        var refreshCookie = makeCookie(new CookieParameter(AuthParams.refreshToken, null, 0, AuthParams.refreshTokenPath));
-
-        //----> Add refresh-cookie to a response object.
-        response.addCookie(refreshCookie);
-
-    }
-
     public UserDto getCurrentUser(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -201,15 +185,36 @@ public class AuthService {
     }
 
     public String getRefreshToken(String refreshToken, HttpServletResponse response){
+        //----> Set jwt.
         var jwt = jwtService.parseToken(refreshToken);
 
-        if (jwt == null || jwt.isExpired()){
+        var email = jwt.getUserEmail(); //----> Get the user-email.
+
+        var user = authRepository.findUserByEmail(email); //----> Get the current-user.
+
+        //----> Revoke the previous access-token before getting a new one.
+        revokedAllUserTokens(user);
+
+        if (jwt.isExpired()){
             throw new UnAuthorizedException("Invalid credentials!");
         }
 
-        var user = this.userRepository.findById(jwt.getUserId()).orElseThrow();
-
+        //----> Get Access-token.
         var accessToken = jwtService.generateAccessToken(user);
+
+        //----> Get the token from repository.
+        var token = tokenRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new UnAuthorizedException("Invalid token!"));
+
+        token.setAccessToken(accessToken.toString()); //----> Set access-token.
+        token.setRefreshToken(refreshToken); //----> set refresh-token.
+
+        //----> Set the token-type, expired and revoked.
+        token.setTokenType(TokenType.Bearer);
+        token.setExpired(false);
+        token.setExpired(false);
+
+        //----> save the new token in the database.
+        tokenRepository.save(token);
 
         //----> Put the access-token in the access-cookie.
         var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)this.jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
@@ -219,6 +224,27 @@ public class AuthService {
 
         return  accessToken.toString();
     }
+
+
+//    public String getRefreshToken(String refreshToken, HttpServletResponse response){
+//        var jwt = jwtService.parseToken(refreshToken);
+//
+//        if (jwt == null || jwt.isExpired()){
+//            throw new UnAuthorizedException("Invalid credentials!");
+//        }
+//
+//        var user = this.userRepository.findById(jwt.getUserId()).orElseThrow();
+//
+//        var accessToken = jwtService.generateAccessToken(user);
+//
+//        //----> Put the access-token in the access-cookie.
+//        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)this.jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
+//        ));
+//
+//        response.addCookie(accessCookie);
+//
+//        return  accessToken.toString();
+//    }
 
     public void revokedAllUserTokens(User user){
         var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
