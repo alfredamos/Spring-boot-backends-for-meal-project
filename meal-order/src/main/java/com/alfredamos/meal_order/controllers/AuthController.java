@@ -48,15 +48,6 @@ public class AuthController {
 
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<ResponseMessage> logout(HttpServletResponse response){
-        //----> Delete access-cookie
-        authService.removeLoginAccess(response);
-
-        //----> Send back the response.
-        return ResponseEntity.ok(new ResponseMessage("Success", "Logout successfully!", 200));
-    }
-
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refresh(@CookieValue(value = AuthParams.refreshToken) String refreshToken, HttpServletResponse response){
        //----> Get a refresh-token.
@@ -65,7 +56,6 @@ public class AuthController {
         //----> Send back the response.
         return ResponseEntity.ok(new JwtResponse(accessToken));
     }
-
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseMessage> signup(@Valid @RequestBody Signup signup){
