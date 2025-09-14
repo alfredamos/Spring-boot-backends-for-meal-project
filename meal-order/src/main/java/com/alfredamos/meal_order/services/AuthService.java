@@ -2,6 +2,8 @@ package com.alfredamos.meal_order.services;
 
 import com.alfredamos.meal_order.config.JwtConfig;
 import com.alfredamos.meal_order.dto.*;
+import com.alfredamos.meal_order.entities.Token;
+import com.alfredamos.meal_order.entities.TokenType;
 import com.alfredamos.meal_order.entities.User;
 import com.alfredamos.meal_order.exceptions.BadRequestException;
 import com.alfredamos.meal_order.exceptions.NotFoundException;
@@ -10,11 +12,13 @@ import com.alfredamos.meal_order.filters.AuthParams;
 import com.alfredamos.meal_order.mapper.AuthMapper;
 import com.alfredamos.meal_order.mapper.UserMapper;
 import com.alfredamos.meal_order.repositories.AuthRepository;
+import com.alfredamos.meal_order.repositories.TokenRepository;
 import com.alfredamos.meal_order.repositories.UserRepository;
 import com.alfredamos.meal_order.utils.ResponseMessage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +38,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final JwtConfig jwtConfig;
+    private final TokenRepository tokenRepository;
 
 
     public ResponseMessage changePassword(ChangePassword changePassword){
@@ -116,17 +121,27 @@ public class AuthService {
 
     public ResponseMessage getLoginAccess(Login login, HttpServletResponse response) {
         //----> Authenticate user.
-        this.authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword()));
+        var loginAction = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
+
+        //----> Authenticate user.
+        authenticationManager.authenticate(loginAction);
 
         //----> Get the authenticated user.
-        var user = this.userService.getUserByEmail(login.getEmail());
+        var user = authRepository.findUserByEmail(login.getEmail());
+
+        //----> Revoke the previous access-token before getting a new one.
+        revokedAllUserTokens(user);
+
+        //----> Initialize a token
+        var token = new Token();
+        token.setUser(user);
 
         //----> Get access token.
-        var accessToken = this.jwtService.generateAccessToken(user);
+        var accessToken = jwtService.generateAccessToken(user);
+        token.setAccessToken(accessToken.toString());
 
         //----> Put the access-token in the access-cookie.
-        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)this.jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
+        var accessCookie = makeCookie(new CookieParameter(AuthParams.accessToken, accessToken, (int)jwtConfig.getAccessTokenExpiration(), AuthParams.accessTokenPath
         ));
 
         //----> Add access-cookie to a response object.
@@ -134,10 +149,21 @@ public class AuthService {
 
         //----> Get refresh-token
         var refreshToken = this.jwtService.generateRefreshToken(user);
+        token.setRefreshToken(refreshToken.toString());
+
+        token.setTokenType(TokenType.Bearer);
+        token.setExpired(false);
+        token.setExpired(false);
+
+        System.out.println("token : " + token);
+
+        //----> save the new token in the database.
+        tokenRepository.save(token);
+
 
         //----> Put the refresh-token in refresh-cookie.
         var refreshCookie = makeCookie(new CookieParameter(AuthParams.refreshToken, refreshToken, (int)this.jwtConfig.getRefreshTokenExpiration(), AuthParams.refreshTokenPath
-                ));
+        ));
 
         //----> Add refresh-cookie to a response object.
         response.addCookie(refreshCookie);
@@ -192,6 +218,19 @@ public class AuthService {
         response.addCookie(accessCookie);
 
         return  accessToken.toString();
+    }
+
+    public void revokedAllUserTokens(User user){
+        var validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
+
+        if (!validUserTokens.isEmpty()){
+            validUserTokens.forEach(token -> {
+                token.setRevoked(true);
+                token.setRevoked(false);
+            });
+            tokenRepository.saveAll(validUserTokens);
+        }
+
     }
 
     private void checkPasswordMatch(String password, String confirmPassword){
