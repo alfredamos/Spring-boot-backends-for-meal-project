@@ -1,5 +1,7 @@
 package com.example.carrepairshopspringbackend.dtos;
 
+import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairshopspringbackend.validations.ValueOfEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,18 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChangePassword {
+public class ChangeUserRole {
     @NotBlank(message = "Email is required.")
     @Email(message = "Email must be valid.")
     private String email;
 
-    @NotBlank(message = "OldPassword is required.")
-    private String password;
-
-    @NotBlank(message = "ConfirmPassword is required.")
-    private String confirmPassword;
-
-    @NotBlank(message = "newPassword is required.")
-    private String newPassword;
+    @ValueOfEnum(enumClass = Role.class, message = "It must be either User or Admin!")
+    private Role role;
 }
 

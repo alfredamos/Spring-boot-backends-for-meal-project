@@ -1,11 +1,11 @@
 package com.example.carrepairshopspringbackend.utils;
 
-import com.alfredamos.springblog.entities.Role;
-import com.alfredamos.springblog.entities.User;
-import com.alfredamos.springblog.exceptions.ForbiddenException;
-import com.alfredamos.springblog.exceptions.NotFoundException;
-import com.alfredamos.springblog.mappers.UserMapper;
-import com.alfredamos.springblog.repositories.AuthRepository;
+import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairshopspringbackend.entities.User;
+import com.example.carrepairshopspringbackend.exceptions.ForbiddenException;
+import com.example.carrepairshopspringbackend.exceptions.NotFoundException;
+import com.example.carrepairshopspringbackend.mapper.UserMapper;
+import com.example.carrepairshopspringbackend.repositories.AuthRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,24 +27,18 @@ public class SameUserAndAdmin {
         var isSameUser = userId.equals(currentUserInfo.getUser().getId());
         var isAdmin = Role.Admin.equals(currentUserInfo.getRole());
 
-        //----> Check for not same-user and not admin
+        //----> Check for different-user and not admin
         if (!isSameUser && !isAdmin){
             throw new ForbiddenException("You are not permitted to view or perform this operation");
         }
 
     }
 
-    public void checkForAdmin(){
+    public boolean checkForAdmin(){
         var currentUserInfo = currentUserInfo(); //----> Current-user info.
 
         //----> Check for admin privilege.
-        var isAdmin = Role.Admin.equals(currentUserInfo.getRole());
-
-        //----> Is not admin.
-        if(!isAdmin){
-            throw new ForbiddenException("You are not permitted to view or perform this operation");
-        }
-
+        return Role.Admin.equals(currentUserInfo.getRole());
     }
 
     private UserAndAdmin currentUserInfo(){
@@ -58,15 +52,26 @@ public class SameUserAndAdmin {
     }
 
     public User getUserFromContext(){
+        //----> Get authentication.
         var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        var email = (String) authentication.getPrincipal();
+        //----> Get email.
+        var email = (String) (authentication != null ? authentication.getPrincipal() : null);
+
+        //----> Check for null email.
+        if (email == null){
+            throw  new NotFoundException("Current user is not found!");
+        }
+
+        //----> Get user from email.
         var user = authRepository.findUserByEmail(email);
 
+        //----> Check for null user.
         if (user == null){
             throw  new NotFoundException("Current user is not found!");
         }
 
+        //----> Return user.
         return user;
     }
 

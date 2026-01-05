@@ -38,7 +38,7 @@ public class CustomerDto {
     @NotBlank(message = "Notes is required!")
     private String notes;
 
-    @ValueOfEnum(enumClass = Gender.class, message = "It must be either Male of Female!")
+    @ValueOfEnum(enumClass = Gender.class, message = "It must be either Male or Female!")
     private Gender gender;
 
     private LocalDate dateOfBirth;

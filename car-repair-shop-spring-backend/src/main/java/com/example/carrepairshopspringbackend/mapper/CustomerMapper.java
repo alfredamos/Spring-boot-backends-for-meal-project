@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
-    Customer toEntity(CustomerDto donorDetailDto);
+    Customer toEntity(CustomerDto customerDto);
     Customer toEntity(CustomerCreate request);
 
     @Mapping(source = "user.id", target = "userId")

@@ -1,8 +1,8 @@
 package com.example.carrepairshopspringbackend.dtos;
 
-import com.alfredamos.springblog.entities.Gender;
-import com.alfredamos.springblog.entities.Role;
-import com.alfredamos.springblog.validations.ValueOfEnum;
+import com.example.carrepairshopspringbackend.entities.Gender;
+import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairshopspringbackend.validations.ValueOfEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

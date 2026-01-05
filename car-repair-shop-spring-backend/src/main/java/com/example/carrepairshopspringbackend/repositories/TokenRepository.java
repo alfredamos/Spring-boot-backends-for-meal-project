@@ -1,6 +1,7 @@
 package com.example.carrepairshopspringbackend.repositories;
 
 import com.example.carrepairshopspringbackend.entities.Token;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,5 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
 
     Optional<Token> findByAccessToken(String token);
 
+    Token findTokenByAccessToken(String accessToken);
 }

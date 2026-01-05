@@ -1,6 +1,6 @@
 package com.example.carrepairshopspringbackend.utils;
 
-import com.alfredamos.springblog.services.Jwt;
+import com.example.carrepairshopspringbackend.services.Jwt;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

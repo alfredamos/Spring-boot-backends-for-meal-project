@@ -55,7 +55,7 @@ public class User {
 
     @CreatedDate
     @Column(name = "createdAt", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
     @Column(name = "updatedAt", nullable = false)

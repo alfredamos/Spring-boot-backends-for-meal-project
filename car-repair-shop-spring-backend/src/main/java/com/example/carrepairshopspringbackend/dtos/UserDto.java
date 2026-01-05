@@ -1,5 +1,6 @@
 package com.example.carrepairshopspringbackend.dtos;
 
+import com.example.carrepairshopspringbackend.entities.Gender;
 import com.example.carrepairshopspringbackend.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,10 @@ public class UserDto {
     private String email;
 
     private String image;
+
+    private String phone;
+
+    private Gender gender;
 
     private Role role;
 

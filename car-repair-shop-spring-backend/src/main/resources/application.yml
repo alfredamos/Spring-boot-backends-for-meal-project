@@ -7,31 +7,30 @@ spring:
     name: car-repair-shop-spring-backend
   datasource:
     url: jdbc:mysql://localhost:3306/spring-car-repair-db?createDatabaseIfNotExist=true
-    username: ${USER_NAME}
-    password: ${PASSWORD}
+    username: root
+    password: Aladjopape1961!
     driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: ${USERNAME}
+#    password: ${PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
     open-in-view: false
     show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
   main:
     allow-circular-references: true
   jwt:
-    secret: ${JWT_TOKEN_KEY}
-    accessTokenExpiration: 900
+#    secret: ${JWT_TOKEN_KEY}
+    secret: eAfycrPlM4cYv4MRXmZmyIVNBpD8y71iqjG7Zq7FQRHcserl4R8OyRCUtPtV3dsqV0vJpp2h0OrgF1QTp7MKtJyTrjz
+    accessTokenExpiration: 86400
     refreshTokenExpiration: 604800
   mvc:
     view:
       prefix: /
 server:
   port: 5000
-  error:
-    include-stacktrace: never
+#  error:
+#    include-stacktrace: never
 
 
 

@@ -1,15 +1,18 @@
 package com.example.carrepairshopspringbackend.configs;
 
 
+import com.example.carrepairshopspringbackend.exceptions.UnAuthorizedException;
+import com.example.carrepairshopspringbackend.services.TokenService;
+import com.example.carrepairshopspringbackend.utils.AuthParams;
+import com.example.carrepairshopspringbackend.utils.UserSessionUtil;
+import com.example.carrepairshopspringbackend.utils.SetCookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -17,35 +20,24 @@ public class LogoutService implements LogoutHandler {
     private final TokenService tokenService;
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        //----> Get the access-token from cookies.
-        var accessCookies = request.getCookies(); //----> Get all cookies.
-        var accessToken = mySpecificCookieValue(accessCookies); //---> Get access-token.
+    public void logout(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Authentication authentication) {
+        //----> Retrieve the session from cookies.
+        var session = UserSessionUtil.toUserSession(request);
 
-        //----> Get the first valid token.
-        var storedAccessToken = tokenService.findTokenByAccessToken(accessToken);
+        //---->
+        if (session == null) {
+            throw new UnAuthorizedException("Invalid token!");
+        }
 
-        //----> Invalidate the tokens by setting expire and revoke to true.
-        tokenService.revokedAllTokensByUserId(storedAccessToken.getUser().getId());
+        //----> Invalidate the tokens by setting expiry and revoke to true.
+        tokenService.revokedAllTokensByUserId(session.getId());
 
         //----> Delete cookies
         SetCookie.deleteCookie(AuthParams.accessToken, AuthParams.accessTokenPath, response);
         SetCookie.deleteCookie(AuthParams.refreshToken, AuthParams.refreshTokenPath, response);
+        SetCookie.deleteCookie(AuthParams.session, AuthParams.sessionPath, response);
 
     }
-
-    private String mySpecificCookieValue(Cookie[] cookies){
-        //----> Check for null cookies.
-        if(cookies == null) return "";
-
-        //----> Fetch access-token from cookies.
-        return Stream.of(cookies)
-                .filter(cookie -> cookie.getName().equals(AuthParams.accessToken))
-                .map(Cookie::getValue)
-                .findFirst().orElse(null);
-
-    }
-
 
 }
 
