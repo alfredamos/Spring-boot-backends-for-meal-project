@@ -7,24 +7,19 @@ import com.example.carrepairshopspringbackend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.carrepairshopspringbackend.utils.AuthParams.role;
-
 @RequiredArgsConstructor
 @Service
-public class UserService implements UserDetailsService, UserServiceImpl {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 

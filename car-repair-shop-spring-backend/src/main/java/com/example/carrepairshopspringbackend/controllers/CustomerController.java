@@ -24,7 +24,7 @@ public class CustomerController {
        return ResponseEntity.ok(response);
    }
 
-    @PostMapping("/change-status/{id}")
+    @PatchMapping("/change-status/{id}")
     public ResponseEntity<?> changeCustomerStatus(@PathVariable UUID id){
         //----> Change the customer status.
         var response = customerService.changeCustomerStatus(id);
@@ -51,7 +51,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCustomerById(@PathVariable UUID id){
        //----> Get the customer by id.
         var response = customerService.getCustomerById(id);
@@ -64,7 +64,7 @@ public class CustomerController {
     public ResponseEntity<?> getAllCustomers(){
        //----> Get all customers.
         var response = customerService.getAllCustomers();
-
+        System.out.println("In get all customers, response : " + response);
         //----> Send back response.
         return ResponseEntity.ok(response);
     }

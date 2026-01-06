@@ -33,7 +33,6 @@ public class Jwt {
     }
 
     public String toString(){
-        System.out.println("Generating JWT token with claims : secretKey : " +  secretKey);
         return Jwts.builder()
                 .claims(claims)
                 .signWith(secretKey)

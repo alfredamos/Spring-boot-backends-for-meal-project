@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +22,9 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper CustomerMapper;
     private final SameUserAndAdmin sameUserAndAdmin;
+    private final CustomerMapper customerMapper;
 
-    public ResponseMessage changeCustomerStatus(UUID id){
+    public CustomerDto changeCustomerStatus(UUID id){
         //----> Retrieve customer by id.
         var customer = getOneCustomer(id);
 
@@ -31,22 +33,25 @@ public class CustomerService {
         customer.setId(id);
 
         //----> Update customer in db.
-        customerRepository.save(customer);
+        var updatedCustomer = customerRepository.save(customer);
 
         //----> Send back response.
-        return new ResponseMessage("Customer status has been changed successfully!", "success", HttpStatus.OK);
+        return customerMapper.toDTO(updatedCustomer);
     }
 
-    public Customer createCustomer(CustomerCreate customer){
+    public CustomerDto createCustomer(CustomerCreate customer){
         //----> Map customer dto to customer entity.
         var customerToCreate = CustomerMapper.toEntity(customer);
 
         //----> Include the creator id in the customer object.
         var user = sameUserAndAdmin.getUserFromContext();
         customerToCreate.setUser(user);
+        customerToCreate.setActive(true);
+        customerToCreate.setCreatedAt(LocalDateTime.now());
+        customerToCreate.setUpdatedAt(LocalDateTime.now());
 
         //----> Save the new customer in the database
-        return customerRepository.save(customerToCreate);
+        return customerMapper.toDTO(customerRepository.save(customerToCreate));
     }
 
     public ResponseMessage deleteCustomerById(UUID id){
@@ -67,6 +72,7 @@ public class CustomerService {
         //----> Include the updater id in the customer object.
         var user = sameUserAndAdmin.getUserFromContext();
         customerToEdit.setUser(user);
+        customerToEdit.setUpdatedAt(LocalDateTime.now());
 
         //----> Retrieve customer by id.
         getOneCustomer(id);
@@ -79,24 +85,24 @@ public class CustomerService {
         return new ResponseMessage("Customer has been updated successfully!", "success", HttpStatus.OK);
     }
 
-    public Customer getCustomerById(UUID id){
+    public CustomerDto getCustomerById(UUID id){
         //----> Retrieve customer by id.
-        return getOneCustomer(id);
+        return customerMapper.toDTO(getOneCustomer(id));
     }
 
-    public List<Customer> getAllCustomers(){
+    public List<CustomerDto> getAllCustomers(){
         //----> Retrieve all customers.
-        return customerRepository.findAll();
+        return customerMapper.toDTOList(customerRepository.findAll());
     }
 
-    public List<Customer> getActiveCustomers(){
+    public List<CustomerDto> getActiveCustomers(){
         //----> Retrieve active customers.
-        return customerRepository.findActiveCustomers();
+        return customerMapper.toDTOList(customerRepository.findActiveCustomers());
     }
 
-    public List<Customer> getInactiveCustomers(){
+    public List<CustomerDto> getInactiveCustomers(){
         //----> Retrieve inactive customers.
-        return customerRepository.findInactiveCustomers();
+        return customerMapper.toDTOList(customerRepository.findInactiveCustomers());
     }
 
     private Customer getOneCustomer(UUID id){

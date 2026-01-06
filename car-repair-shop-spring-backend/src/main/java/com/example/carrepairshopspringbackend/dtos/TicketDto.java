@@ -24,5 +24,8 @@ public class TicketDto {
     @NotBlank(message = "Notes is required!")
     private String notes;
 
+    private Boolean completed = false;
+
+
     private UUID customerId;
 }

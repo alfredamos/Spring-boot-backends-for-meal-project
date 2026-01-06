@@ -208,23 +208,18 @@ public class AuthService {
         var accessCookie = makeCookie(AuthParams.accessToken, accessToken.toString(), AuthParams.accessTokenExpiration, AuthParams.accessTokenPath);
         response.addCookie(accessCookie);
         token.setAccessToken(accessToken.toString());
-        System.out.println("In generateTokensAndSessionAndSetCookies, accessToken : " + accessToken);
 
         //----> Make a session for the user.
         var session = MakeSession(user, accessToken.toString());
         var encodedUserSessionString = UserSessionUtil.toEncodedString(session, response);
-        System.out.println("In generateTokensAndSessionAndSetCookies, sessionString : " + encodedUserSessionString);
         var sessionCookie = makeCookie(AuthParams.session, encodedUserSessionString, AuthParams.sessionExpiration, AuthParams.sessionPath);
         response.addCookie(sessionCookie);
-
-
 
         //----> Generate a refresh token and set it in a cookie.
         var refreshToken = jwtService.generateRefreshToken(user);
         var refreshCookie = makeCookie(AuthParams.refreshToken, refreshToken.toString(), AuthParams.refreshTokenExpiration, AuthParams.refreshTokenPath);
         response.addCookie(refreshCookie);
         token.setRefreshToken(refreshToken.toString());
-        System.out.println();
 
         //----> Make a new token object.
         var tokenObj = makeNewTokenObject(token);

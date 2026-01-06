@@ -3,7 +3,9 @@ package com.example.carrepairshopspringbackend.services;
 import com.example.carrepairshopspringbackend.dtos.TicketCreate;
 import com.example.carrepairshopspringbackend.dtos.TicketDto;
 import com.example.carrepairshopspringbackend.entities.Ticket;
+import com.example.carrepairshopspringbackend.exceptions.NotFoundException;
 import com.example.carrepairshopspringbackend.mapper.TicketMapper;
+import com.example.carrepairshopspringbackend.repositories.CustomerRepository;
 import com.example.carrepairshopspringbackend.repositories.TicketRepository;
 import com.example.carrepairshopspringbackend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +23,7 @@ import java.util.UUID;
 public class TicketService {
     private final TicketMapper ticketMapper;
     private final TicketRepository ticketRepository;
+    private final CustomerRepository customerRepository;
 
     public ResponseMessage changeTicketStatus(UUID id){
         //----> Retrieve ticket by id.
@@ -37,8 +41,14 @@ public class TicketService {
     }
 
     public TicketDto CreateTicket(TicketCreate request){
+        //----> Get the customer attached to this ticket.
+        var customer = customerRepository.findById(request.getCustomerId()).orElseThrow(() -> new NotFoundException("Customer not found with id: " + request.getCustomerId()));
         //----> Map ticket dto to ticket entity.
         var ticketToCreate = ticketMapper.toEntity(request);
+        ticketToCreate.setCreatedAt(LocalDateTime.now());
+        ticketToCreate.setUpdatedAt(LocalDateTime.now());
+        ticketToCreate.setCompleted(false);
+        ticketToCreate.setCustomer(customer);
 
         //----> Save the ticket in db and return it.
         return ticketMapper.toDTO(ticketRepository.save(ticketToCreate));
@@ -63,6 +73,7 @@ public class TicketService {
         //----> Retrieve ticket by id.
         getOneTicket(id);
         ticketToEdit.setId(id);
+        ticketToEdit.setUpdatedAt(LocalDateTime.now());
 
         //----> Edit ticket.
         ticketRepository.save(ticketToEdit);

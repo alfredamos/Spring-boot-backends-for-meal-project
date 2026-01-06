@@ -1,12 +1,10 @@
 package com.example.carrepairshopspringbackend.controllers;
 
+import com.example.carrepairshopspringbackend.entities.Token;
 import com.example.carrepairshopspringbackend.services.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -16,6 +14,16 @@ import java.util.UUID;
 public class TokenController {
 
     private final TokenService tokenService;
+
+    @PostMapping("/")
+    public ResponseEntity<?> createToken(@RequestBody Token token){
+        return ResponseEntity.ok(tokenService.createToken(token));
+    }
+
+    @GetMapping("/get-token-by-access-token/{accessToken}")
+    public ResponseEntity<?> getTokenByAccessToken(@PathVariable String accessToken){
+        return ResponseEntity.ok(tokenService.findTokenByAccessToken(accessToken));
+    }
 
     @DeleteMapping("/all/delete-all")
     public ResponseEntity<?> deleteAllInvalidTokens() {

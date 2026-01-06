@@ -43,6 +43,8 @@ public class CustomerDto {
 
     private LocalDate dateOfBirth;
 
+    private Boolean active = true;
+
     private UUID userId;
 
 }
