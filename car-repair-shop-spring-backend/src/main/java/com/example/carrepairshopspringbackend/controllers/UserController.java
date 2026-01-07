@@ -3,6 +3,7 @@ package com.example.carrepairshopspringbackend.controllers;
 import com.example.carrepairshopspringbackend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -14,6 +15,7 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> deleteUserId(@PathVariable UUID id){
         //----> Delete user by id.
         var response = userService.deleteUserById(id);
@@ -32,6 +34,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('Admin')")
     public ResponseEntity<?> getAllUsers(){
         //----> Get all users.
         var response = userService.getAllUsers();

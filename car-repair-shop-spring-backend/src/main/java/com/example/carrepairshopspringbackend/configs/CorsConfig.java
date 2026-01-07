@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-//public class CorsConfig{
 public class CorsConfig implements WebMvcConfigurer {
 
     @Override
