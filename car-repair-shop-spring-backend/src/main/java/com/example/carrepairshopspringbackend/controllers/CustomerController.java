@@ -17,6 +17,7 @@ public class CustomerController {
    private final CustomerService customerService;
 
    @PostMapping
+   @PreAuthorize("@sameUserCheck.isAdmin()")
    public ResponseEntity<?> createCustomer(@RequestBody CustomerCreate request){
        //----> Save the new customer in db.
        var response = customerService.createCustomer(request);
@@ -26,7 +27,7 @@ public class CustomerController {
    }
 
     @PatchMapping("/change-status/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> changeCustomerStatus(@PathVariable UUID id){
         //----> Change the customer status.
         var response = customerService.changeCustomerStatus(id);
@@ -36,7 +37,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> deleteCustomerById(@PathVariable UUID id){
         //----> Delete the customer by id.
         var response = customerService.deleteCustomerById(id);
@@ -46,7 +47,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> editCustomerById(@PathVariable UUID id, @RequestBody CustomerDto request){
         //----> Save the new customer in db.
         var response = customerService.editCustomerById(id, request);
@@ -65,7 +66,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getAllCustomers(){
        //----> Get all customers.
         var response = customerService.getAllCustomers();
@@ -75,7 +76,7 @@ public class CustomerController {
     }
 
     @GetMapping("/all-active/get-all-active-customers")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getActiveCustomers(){
         //----> Get all active customers.
         var response = customerService.getActiveCustomers();
@@ -85,7 +86,7 @@ public class CustomerController {
     }
 
     @GetMapping("/all-inactive/get-all-inactive-customers")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getInactiveCustomers(){
         //----> Get all inactive customers.
         var response = customerService.getInactiveCustomers();

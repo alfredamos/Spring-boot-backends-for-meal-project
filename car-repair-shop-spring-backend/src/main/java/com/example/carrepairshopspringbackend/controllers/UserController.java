@@ -25,6 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@sameUserCheck.isOwnerCheckById(#id)")
     public ResponseEntity<?> getUserId(@PathVariable UUID id){
         //----> Get user by id.
         var response = userService.getUserById(id);

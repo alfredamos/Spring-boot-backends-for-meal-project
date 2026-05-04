@@ -27,7 +27,7 @@ public class TokenController {
     }
 
     @DeleteMapping("/all/delete-all")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> deleteAllInvalidTokens() {
         //----> Delete all invalid tokens.
         var response = tokenService.deleteAllInvalidTokens();
@@ -37,6 +37,7 @@ public class TokenController {
     }
 
     @DeleteMapping("/delete-by-user-id/{userId}")
+    @PreAuthorize("@sameUserCheck.isOwnerCheckById(#userId)")
     public ResponseEntity<?> deleteInvalidTokensByUserId(@PathVariable UUID userId) {
         //----> Delete invalid tokens by user id.
         var response = tokenService.deleteInvalidTokensByUserId(userId);

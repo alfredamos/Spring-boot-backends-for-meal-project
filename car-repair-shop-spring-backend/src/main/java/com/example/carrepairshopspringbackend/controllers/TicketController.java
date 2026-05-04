@@ -26,7 +26,7 @@ public class TicketController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> createTicket(@RequestBody TicketCreate request){
         //----> Create a new ticket.
         var response = ticketService.CreateTicket(request);
@@ -36,7 +36,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> deleteTicketById(@PathVariable UUID id){
         //----> Delete ticket by id.
         var response = ticketService.deleteTicketById(id);
@@ -46,7 +46,7 @@ public class TicketController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> editTicketById(@PathVariable UUID id, @RequestBody TicketDto request){
         //----> Edit ticket by id.
         var response = ticketService.editTicketById(id, request);
@@ -65,7 +65,7 @@ public class TicketController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getAllTickets(){
         //----> Fetch all tickets.
         var response = ticketService.getAllTickets();
@@ -75,7 +75,7 @@ public class TicketController {
     }
 
     @GetMapping("/all/get-all-complete-tickets")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getCompleteTickets(){
         //----> Fetch completed tickets.
         var response = ticketService.getCompleteTickets();
@@ -85,7 +85,7 @@ public class TicketController {
     }
 
     @GetMapping("/all/get-all-incomplete-tickets")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getIncompleteTickets(){
         //----> Fetch incomplete tickets.
         var response = ticketService.getIncompleteTickets();
@@ -95,6 +95,7 @@ public class TicketController {
     }
 
     @GetMapping("/get-tickets-by-user-email/{email}")
+    @PreAuthorize("@sameUserCheck.isOwnerCheckByEmail(#email)")
     public ResponseEntity<?> getTicketsByEmail(@PathVariable String email){
         //----> Fetch tickets by email.
         var response = ticketService.getTicketsByEmail(email);
@@ -104,7 +105,7 @@ public class TicketController {
     }
 
     @GetMapping("/get-tickets-by-customer-id/{customerId}")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("@sameUserCheck.isAdmin()")
     public ResponseEntity<?> getTicketsByCustomerId(@PathVariable UUID customerId){
         //----> Fetch tickets by email.
         var response = ticketService.getTicketsByCustomerId(customerId);

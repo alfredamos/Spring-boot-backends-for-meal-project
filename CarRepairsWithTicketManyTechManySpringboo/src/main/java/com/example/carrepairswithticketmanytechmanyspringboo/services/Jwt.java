@@ -1,13 +1,10 @@
-package com.example.carrepairshopspringbackend.services;
+package com.example.carrepairswithticketmanytechmanyspringboo.services;
 
-import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -24,6 +21,10 @@ public class Jwt {
     public UUID getUserId(){
         var userId = claims.getSubject();
         return UUID.fromString(userId);
+    }
+
+    public String getUserName(){
+        return claims.get("name", String.class);
     }
 
     public Role getUserRole(){

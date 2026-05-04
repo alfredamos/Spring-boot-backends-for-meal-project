@@ -1,12 +1,15 @@
 package com.example.carrepairshopspringbackend.services;
 
 import com.example.carrepairshopspringbackend.dtos.UserDto;
+import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairshopspringbackend.exceptions.NotFoundException;
 import com.example.carrepairshopspringbackend.mapper.UserMapper;
 import com.example.carrepairshopspringbackend.repositories.UserRepository;
 import com.example.carrepairshopspringbackend.utils.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -62,5 +65,40 @@ public class UserService implements UserDetailsService {
         return userMapper.toDTOList(userRepository.findAll());
     }
 
+    public com.example.carrepairshopspringbackend.entities.User getUserFromContext(){
+        //----> Get authentication.
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        //----> Get email.
+        var email = (String) (authentication != null ? authentication.getPrincipal() : null);
+
+        //----> Check for null email.
+        if (email == null){
+            throw  new NotFoundException("Current user is not found!");
+        }
+
+        //----> Get user from email.
+        var user = userRepository.findUserByEmail(email);
+
+        //----> Check for null user.
+        if (user == null){
+            throw  new NotFoundException("Current user is not found!");
+        }
+
+        //----> Return user.
+        return user;
+    }
+
+    public UUID getId(){
+        return getUserFromContext().getId();
+    }
+
+    public String getEmail(){
+        return getUserFromContext().getEmail();
+    }
+
+    public Role getRole(){
+        return getUserFromContext().getRole();
+    }
 }
 

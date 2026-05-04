@@ -1,7 +1,7 @@
-package com.example.carrepairshopspringbackend.configs;
+package com.example.carrepairswithticketmanytechmanyspringboo.configs;
 
-import com.example.carrepairshopspringbackend.entities.Role;
-import com.example.carrepairshopspringbackend.filter.JwtAuthenticationFilter;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.filters.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +42,6 @@ class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-//
 
 
     @Bean
