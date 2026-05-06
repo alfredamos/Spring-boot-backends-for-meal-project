@@ -34,12 +34,12 @@ public class AssignedTicket {
 
     @ManyToOne
     @MapsId("techId") // Maps the techId from the embedded id to this association
-    @JoinColumn(name = "techId")
+    @JoinColumn(name = "tech_id")
     private Technician tech;
 
     @ManyToOne
     @MapsId("ticketId") // Maps the ticketId from the embedded id to this association
-    @JoinColumn(name = "ticketId")
+    @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
     @CreationTimestamp

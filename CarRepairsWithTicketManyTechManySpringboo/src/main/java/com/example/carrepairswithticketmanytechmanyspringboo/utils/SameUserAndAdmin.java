@@ -1,11 +1,11 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.utils;
 
-import com.example.carrepairshopspringbackend.entities.Role;
-import com.example.carrepairshopspringbackend.entities.User;
-import com.example.carrepairshopspringbackend.exceptions.ForbiddenException;
-import com.example.carrepairshopspringbackend.exceptions.NotFoundException;
-import com.example.carrepairshopspringbackend.mapper.UserMapper;
-import com.example.carrepairshopspringbackend.repositories.AuthRepository;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.User;
+import com.example.carrepairswithticketmanytechmanyspringboo.exceptions.ForbiddenException;
+import com.example.carrepairswithticketmanytechmanyspringboo.exceptions.NotFoundException;
+import com.example.carrepairswithticketmanytechmanyspringboo.mappers.UserMapper;
+import com.example.carrepairswithticketmanytechmanyspringboo.repositories.AuthRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.context.SecurityContextHolder;

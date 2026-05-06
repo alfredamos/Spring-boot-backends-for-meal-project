@@ -18,7 +18,5 @@ public class ChangeUserRole {
     @Email(message = "Email must be valid.")
     private String email;
 
-    @ValueOfEnum(enumClass = Role.class, message = "It must be either User or Admin!")
-    private Role role;
 }
 

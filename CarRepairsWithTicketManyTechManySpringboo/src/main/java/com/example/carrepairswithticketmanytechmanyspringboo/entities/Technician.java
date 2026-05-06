@@ -6,6 +6,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -24,8 +26,7 @@ public class Technician {
     private String specialty;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "userId") // Foreign key column in 'technicians' table
+    @JoinColumn(name = "userId", referencedColumnName = "id") // Foreign key column in 'technicians' table
     private User user;
 
     @CreatedDate
@@ -35,4 +36,8 @@ public class Technician {
     @LastModifiedDate
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "tech", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private Set<AssignedTicket> assignedTickets = new HashSet<>();
 }

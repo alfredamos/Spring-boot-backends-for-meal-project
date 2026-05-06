@@ -21,11 +21,12 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class authService implements IAuthService{
+public class AuthService implements IAuthService{
     private final AuthRepository authRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthMapper authMapper;
-    private JwtService jwtService;
+    private final JwtService jwtService;
+    private final SessionUtil sessionUtil;
     private final TokenService tokenService;
     private final UserMapper userMapper;
 
@@ -33,7 +34,7 @@ public class authService implements IAuthService{
     public ResponseMessage changeUserPassword(ChangeUserPassword changePassword) {
         //----> Check for password match.
         if(isPasswordNotMatch(changePassword.getNewPassword(), changePassword.getConfirmPassword())){
-            return ResponseMessage.builder().message("Passwords do not match.").status("error").build();
+            return ResponseMessage.builder().message("Passwords do not match.").status("error").statusCode(HttpStatus.BAD_REQUEST).build();
         }
 
         //----> Check for existing user.
@@ -41,7 +42,7 @@ public class authService implements IAuthService{
 
         //----> Check for password validity.
         if(isPasswordNotValid(changePassword.getPassword(), user.getPassword())){
-            return ResponseMessage.builder().message("Current password is incorrect.").status("error").build();
+            return ResponseMessage.builder().message("Current password is incorrect.").status("error").statusCode(HttpStatus.UNAUTHORIZED).build();
         }
 
         //----> Hash and update new password.
@@ -55,19 +56,18 @@ public class authService implements IAuthService{
     }
 
     @Override
-    public ResponseMessage changeUserRole(UUID id, HttpServletRequest request) {
+    public ResponseMessage changeUserRole(ChangeUserRole changeUserRole, HttpServletRequest request) {
         //----> Get the user session.
         var session = getUserSession(request);
 
         //----> Check for null user session.
-        if(session == null) return ResponseMessage.builder().message("User not logged in!").status("error").build();
+        if(session == null) return ResponseMessage.builder().message("User not logged in!").status("error").statusCode(HttpStatus.UNAUTHORIZED).build();
 
         //----> User to change role must be an admin.
-        if (session.getRole() != Role.Admin) return ResponseMessage.builder().message("Only admin can change user role!").status("error").build();
+        if (session.getRole() != Role.Admin) return ResponseMessage.builder().message("Only admin can change user role!").status("error").statusCode(HttpStatus.FORBIDDEN).build();
 
         //----> Check for existent user.
-        var user = authRepository.findById(id).orElse(null);
-        if(user == null) return ResponseMessage.builder().message("User not found!").status("error").build();
+        var user = this.findUserByEmail(changeUserRole.getEmail());
 
         //----> Change user role.
         user.setRole(user.getRole() == Role.User ? Role.Admin : Role.User);
@@ -78,13 +78,13 @@ public class authService implements IAuthService{
     }
 
     @Override
-    public ResponseMessage editUserPassword(EditUserProfile editProfile) {
+    public ResponseMessage editUserProfile(EditUserProfile editProfile) {
         //----> Check for existent user.
         var user = findUserByEmail(editProfile.getEmail());
 
         //----> Check for password validity.
         if(isPasswordNotValid(editProfile.getPassword(), user.getPassword())){
-            return ResponseMessage.builder().message("Current password is incorrect.").status("error").build();
+            return ResponseMessage.builder().message("Current password is incorrect.").status("error").statusCode(HttpStatus.UNAUTHORIZED).build();
         }
 
         //----> Store the updated user in db.
@@ -92,6 +92,7 @@ public class authService implements IAuthService{
         mappedUser.setId(user.getId());
         mappedUser.setPassword(user.getPassword());
         mappedUser.setRole(user.getRole());
+        mappedUser.setUserType(user.getUserType());
         authRepository.save(mappedUser);
 
         //----> Send back response.
@@ -118,26 +119,7 @@ public class authService implements IAuthService{
 
     @Override
     public Session getUserSession(HttpServletRequest request) {
-        //----> Get the access token from cookies.
-        var accessToken = CookieUtil.getCookie(request, AuthParams.accessToken);
-
-        //----> Check for null access token.
-        if(accessToken == null) return EmptySession.toEmptySession();
-
-        //----> Parse the access token.
-        var jwt = jwtService.parseToken(accessToken.getValue());
-
-        //----> Check for null and expired jwt.
-        if(jwt == null || jwt.isExpired()) return EmptySession.toEmptySession();
-
-        //----> Get the user associated with the jwt from db.
-        var user = authRepository.findUserByEmail(jwt.getUserEmail());
-
-        //----> Check for null user.
-        if(user == null) return EmptySession.toEmptySession();
-
-        //----> Make user session.
-        return this.makeUserSession(user, accessToken.getValue());
+        return sessionUtil.getUserSession(request);
     }
 
     @Override
@@ -154,24 +136,7 @@ public class authService implements IAuthService{
     }
 
     @Override
-    public Session logoutUser(HttpServletRequest request, HttpServletResponse response) {
-        //----> Get the user session.
-        var session = getUserSession(request);
-        if(session == null) return EmptySession.toEmptySession();
-
-        //----> Revoke all valid tokens.
-        tokenService.revokeAllValidTokensByUserId(session.getId());
-
-        //----> Delete all tokens in cookies.
-        CookieUtil.deleteCookie(AuthParams.accessToken, AuthParams.accessTokenPath, response);
-        CookieUtil.deleteCookie(AuthParams.refreshToken, AuthParams.refreshTokenPath, response);
-
-        //----> Send back response.
-        return EmptySession.toEmptySession();
-    }
-
-    @Override
-    public Session refreshUserSession(String refreshUserToken, HttpServletResponse response) {
+    public Session refreshUserToken(String refreshUserToken, HttpServletResponse response) {
         //----> Parse the refresh token.
         var jwt = jwtService.parseToken(refreshUserToken);
 
@@ -193,18 +158,19 @@ public class authService implements IAuthService{
     public ResponseMessage signupUser(SignupUser signup) {
         //----> Check for password match.
         if(isPasswordNotMatch(signup.getPassword(), signup.getConfirmPassword())){
-            return ResponseMessage.builder().message("Passwords do not match.").status("error").build();
+            return ResponseMessage.builder().message("Passwords do not match.").status("error").statusCode(HttpStatus.BAD_REQUEST).build();
         }
 
         //----> Check for existing user.
         var user = authRepository.findUserByEmail(signup.getEmail());
         if(user != null){
-            return ResponseMessage.builder().message("User already exists.").status("error").build();
+            return ResponseMessage.builder().message("User already exists.").status("error").statusCode(HttpStatus.UNAUTHORIZED).build();
         }
 
         //----> Hash the password.
         var encodedPassword = bCryptPasswordEncoder.encode(signup.getPassword());
         signup.setPassword(encodedPassword);
+        signup.setRole(Role.User);
 
         //----> Store the user in db.
         authRepository.save(authMapper.toEntity(signup));
@@ -226,7 +192,7 @@ public class authService implements IAuthService{
         CookieUtil.setCookie(refreshToken.toString(), AuthParams.refreshToken, AuthParams.refreshTokenPath, AuthParams.refreshTokenExpiration, response);
 
         //----> Store refresh token in db.
-        var tokenObj = this.makeTokenObject(accessToken.toString(), refreshToken.toString());
+        var tokenObj = this.makeTokenObject(accessToken.toString(), refreshToken.toString(), user);
         tokenService.createToken(tokenObj);
 
         //----> Make user session.
@@ -266,13 +232,14 @@ public class authService implements IAuthService{
                 .build();
     }
 
-    private Token makeTokenObject(String accessToken, String refreshToken){
+    private Token makeTokenObject(String accessToken, String refreshToken, User user){
         return Token.builder()
                 .accessToken(accessToken)
                 .expired(false)
                 .revoked(false)
                 .tokenType(TokenType.Bearer)
                 .refreshToken(refreshToken)
+                .user(user)
                 .build();
     }
 }

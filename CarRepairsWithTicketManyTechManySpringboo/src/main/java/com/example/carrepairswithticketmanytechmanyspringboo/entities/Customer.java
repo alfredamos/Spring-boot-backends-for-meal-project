@@ -31,8 +31,7 @@ public class Customer {
     private String notes;
 
     @OneToOne
-    @MapsId
-    @JoinColumn(name = "userId") // Foreign key column in 'customers' table
+    @JoinColumn(name = "userId", referencedColumnName = "id") // Foreign key column in 'customers' table
     private User user;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -12,13 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerCreate {
-    @NotBlank(message = "Notes is required!")
-    private String notes;
+public class TechnicianDto {
+    private UUID id;
 
-    @NotBlank(message = "Address is required!")
-    private String address;
+    @NotBlank(message = "Specialty is required!")
+    private String specialty;
 
     private UUID userId;
-
 }

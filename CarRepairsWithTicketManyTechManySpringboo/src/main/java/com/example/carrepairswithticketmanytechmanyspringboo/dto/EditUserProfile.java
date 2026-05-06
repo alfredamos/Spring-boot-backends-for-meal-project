@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class EditUserProfile {
+    @NotBlank(message = "Address is required.")
     private String address;
 
     @NotBlank(message = "Name is required.")

@@ -1,0 +1,42 @@
+spring:
+  main:
+    allow-circular-references: true
+  spring:
+    jackson:
+      deserialization:
+        read-unknown-enum-values-as-null: false
+  application:
+    name: CarRepairsWithTicketManyTechManySpringboot
+  datasource:
+    url: jdbc:mysql://localhost:3306/car-repairs-and-overhaul-springboot-db?createDatabaseIfNotExist=true
+    username: root
+    password: Aladjopape1961!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    username: ${USER_NAME}
+  #    password: ${USER_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    show-sql: true
+    logging:
+      level:
+        org.hibernate.SQL: debug
+        org.hibernate.type.descriptor.sql.BasicBinder: trace
+  jwt:
+      #    secret: ${JWT_TOKEN_KEY}
+      secret: eAfycrPlM4cYv4MRXmZmyIVNBpD8y71iqjG7Zq7FQRHcserl4R8OyRCUtPtV3dsqV0vJpp2h0OrgF1QTp7MKtJyTrjz
+      accessTokenExpiration: 86400
+      refreshTokenExpiration: 604800
+  mvc:
+      view:
+        prefix: /
+server:
+    port: 5000
+  #  error:
+  #    include-stacktrace: never
+app:
+  default-role: User
+  default-userType: Customer

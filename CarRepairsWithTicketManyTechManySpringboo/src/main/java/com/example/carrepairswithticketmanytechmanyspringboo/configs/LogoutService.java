@@ -4,10 +4,9 @@ package com.example.carrepairswithticketmanytechmanyspringboo.configs;
 import com.example.carrepairswithticketmanytechmanyspringboo.exceptions.UnAuthorizedException;
 import com.example.carrepairswithticketmanytechmanyspringboo.services.IAuthService;
 import com.example.carrepairswithticketmanytechmanyspringboo.services.ITokenService;
-import com.example.carrepairswithticketmanytechmanyspringboo.services.TokenService;
 import com.example.carrepairswithticketmanytechmanyspringboo.utils.AuthParams;
 import com.example.carrepairswithticketmanytechmanyspringboo.utils.CookieUtil;
-import com.example.carrepairswithticketmanytechmanyspringboo.utils.UserSessionUtil;
+import com.example.carrepairswithticketmanytechmanyspringboo.utils.SessionUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +19,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
     private final ITokenService tokenService;
-    private final IAuthService authService;
+    private final SessionUtil sessionUtil;
+    //private final IAuthService authService;
 
     @Override
     public void logout(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, Authentication authentication) {
         //----> Get the user session.
-        var session = authService.getUserSession(request);
+        var session = sessionUtil.getUserSession(request);
 
         //---->
         if (session == null) {

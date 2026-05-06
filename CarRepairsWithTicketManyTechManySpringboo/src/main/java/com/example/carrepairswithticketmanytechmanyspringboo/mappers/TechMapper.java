@@ -2,21 +2,22 @@ package com.example.carrepairswithticketmanytechmanyspringboo.mappers;
 
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerCreate;
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerDto;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerEdit;
+import com.example.carrepairswithticketmanytechmanyspringboo.dto.TechnicianCreate;
+import com.example.carrepairswithticketmanytechmanyspringboo.dto.TechnicianDto;
 import com.example.carrepairswithticketmanytechmanyspringboo.entities.Customer;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Technician;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface CustomerMapper {
-    Customer toEntity(CustomerDto customerDto);
-    Customer toEntity(CustomerCreate request);
-    Customer toEntity(CustomerEdit request);
+public interface TechMapper {
+    Technician toEntity(TechnicianDto techDto);
+    Technician toEntity(TechnicianCreate request);
 
     @Mapping(source = "user.id", target = "userId")
-    CustomerDto toDTO(Customer customer);
+    TechnicianDto toDTO(Technician technician);
 
-    List<CustomerDto> toDTOList(List<Customer> customers);
+    List<TechnicianDto> toDTOList(List<Technician> techs);
 }

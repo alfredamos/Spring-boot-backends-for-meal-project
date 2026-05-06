@@ -5,17 +5,14 @@ import com.example.carrepairswithticketmanytechmanyspringboo.utils.ResponseMessa
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.util.UUID;
-
 public interface IAuthService {
     ResponseMessage changeUserPassword(ChangeUserPassword changePassword);
-    ResponseMessage changeUserRole(UUID id, HttpServletRequest request);
-    ResponseMessage editUserPassword(EditUserProfile editProfile);
+    ResponseMessage changeUserRole(ChangeUserRole changeUserRole, HttpServletRequest request);
+    ResponseMessage editUserProfile(EditUserProfile editProfile);
     UserDto getCurrentUser(HttpServletRequest request);
     Session getUserSession(HttpServletRequest request);
     Session loginUser(LoginUser login, HttpServletResponse response);
-    Session logoutUser(HttpServletRequest request, HttpServletResponse response);
-    Session refreshUserSession(String refreshUserToken, HttpServletResponse response);
+    Session refreshUserToken(String refreshUserToken, HttpServletResponse response);
     ResponseMessage signupUser(SignupUser signup);
 
 }

@@ -16,9 +16,9 @@ import java.util.UUID;
 @Setter
 @Embeddable
 public class AssignedTicketId implements Serializable {
-    @Column(name = "techId")
+    @Column(name = "tech_id")
     private UUID techId;
 
-    @Column(name = "ticketId")
+    @Column(name = "ticket_id")
     private UUID ticketId;
 }

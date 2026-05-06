@@ -1,6 +1,6 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.dto;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.TokenType;
 
-import com.example.carrepairshopspringbackend.entities.TokenType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

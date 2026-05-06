@@ -12,7 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerCreate {
+public class CustomerEdit {
+    private UUID id;
+
     @NotBlank(message = "Notes is required!")
     private String notes;
 

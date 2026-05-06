@@ -6,6 +6,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -24,14 +26,8 @@ public class Ticket {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String tech;
-
     @Column(nullable = false, columnDefinition = "text")
-    private String notes;
-
-    @Column()
-    private Boolean completed = false;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name="customerId")
@@ -44,4 +40,8 @@ public class Ticket {
     @LastModifiedDate
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private Set<AssignedTicket> assignedTickets = new HashSet<>();
 }

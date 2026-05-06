@@ -18,14 +18,8 @@ public class TicketDto {
     @NotBlank(message = "Name is required!")
     private String title;
 
-    @NotBlank(message = "Technician is required!")
-    private String tech;
-
-    @NotBlank(message = "Notes is required!")
-    private String notes;
-
-    private Boolean completed = false;
-
+    @NotBlank(message = "Description is required!")
+    private String description;
 
     private UUID customerId;
 }

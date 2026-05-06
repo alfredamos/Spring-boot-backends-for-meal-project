@@ -1,8 +1,9 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.dto;
 
-import com.example.carrepairshopspringbackend.entities.Gender;
-import com.example.carrepairshopspringbackend.entities.Role;
-import com.example.carrepairshopspringbackend.validations.ValueOfEnum;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Gender;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.UserType;
+import com.example.carrepairswithticketmanytechmanyspringboo.validations.ValueOfEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -44,5 +45,6 @@ public class SignupUser {
     private String confirmPassword;
 
     private Role role;
+    private UserType userType;
 }
 

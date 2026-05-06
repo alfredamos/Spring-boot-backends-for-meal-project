@@ -1,7 +1,7 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.dto;
 
-import com.example.carrepairshopspringbackend.entities.Gender;
-import com.example.carrepairshopspringbackend.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Gender;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

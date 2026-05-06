@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1dcc0a86-98a6-42af-8848-f1c4af59e4e0" name="Changes" comment="Add admin and ownerCheck PreAuthorized to protect endpoints.">
+      <change afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/utils/SessionUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/configs/LogoutService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/configs/LogoutService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/CustomerCreate.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/CustomerCreate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/CustomerDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/CustomerDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/SignupUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/SignupUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/TokenCreate.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/TokenCreate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/TokenDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/TokenDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/dto/UserDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/repositories/CustomerRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/repositories/CustomerRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/services/IAuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/services/IAuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/services/authService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/services/authService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/utils/SameUserAndAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/utils/SameUserAndAdmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/utils/UserAndAdmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CarRepairsWithTicketManyTechManySpringboo/src/main/java/com/example/carrepairswithticketmanytechmanyspringboo/utils/UserAndAdmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../list-of-blood-donor-spring-boot-backend" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../spring-blog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../spring-donor-list-backend" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../spring-management-of-employees" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;alfredamos&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/alfredamos/Spring-boot-backends-for-meal-project.git",
+    "accountId": "4215ac93-6ad0-406d-bf74-bdef91cef95e"
+  }
+}]]></component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="3A8jmWCyCS0H8mhG3TreZ5RRIxl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.EventsAndAttendeesSpringBackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/alfre/OneDrive/backends/Spring/eventsAndAttendeesSpringBackend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.sync&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.github.com.eventsandattendeesspringbackend.dtos" />
+      <recent name="com.github.com.eventsandattendeesspringbackend.utils" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\alfre\OneDrive\Backends\Spring\eventsAndAttendeesSpringBackend\src\main\java\com\github\com\eventsandattendeesspringbackend\services" />
+      <recent name="C:\Users\alfre\OneDrive\Backends\Spring\eventsAndAttendeesSpringBackend\src\main\java\com\github\com\eventsandattendeesspringbackend\utils" />
+      <recent name="C:\Users\alfre\OneDrive\Backends\Spring\eventsAndAttendeesSpringBackend\src\main\java\com\github\com\eventsandattendeesspringbackend\dtos" />
+      <recent name="C:\Users\alfre\OneDrive\Backends\Spring\eventsAndAttendeesSpringBackend\src\main\java\com\github\com\eventsandattendeesspringbackend\entities" />
+      <recent name="C:\Users\alfre\OneDrive\Backends\Spring\eventsAndAttendeesSpringBackend\src\main\java\com\github\com\eventsandattendeesspringbackend\mapper" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.github.com.eventsandattendeesspringbackend.controllers" />
+      <recent name="com.github.com.eventsandattendeesspringbackend.filters" />
+      <recent name="com.github.com.eventsandattendeesspringbackend.entities" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="EventsAndAttendeesSpringBackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="eventsAndAttendeesSpringBackend" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.github.com.eventsandattendeesspringbackend.EventsAndAttendeesSpringBackendApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.31033.145" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.31033.145" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1dcc0a86-98a6-42af-8848-f1c4af59e4e0" name="Changes" comment="" />
+      <created>1771981251208</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1771981251208</updated>
+      <workItem from="1771981255523" duration="2615000" />
+      <workItem from="1772043542313" duration="4762000" />
+      <workItem from="1772099068176" duration="34579000" />
+      <workItem from="1772186758872" duration="24601000" />
+      <workItem from="1772477950867" duration="7000" />
+      <workItem from="1772568220116" duration="622000" />
+      <workItem from="1774129768892" duration="9000" />
+      <workItem from="1777750835693" duration="1412000" />
+      <workItem from="1777829806946" duration="9599000" />
+      <workItem from="1777885887434" duration="3610000" />
+      <workItem from="1777918945166" duration="6000" />
+    </task>
+    <task id="LOCAL-00001" summary="Add auth functionalities and user functionalities.">
+      <option name="closed" value="true" />
+      <created>1772134315643</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1772134315643</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Addfunctionalities and user functionalities.">
+      <option name="closed" value="true" />
+      <created>1772215700033</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1772215700034</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add attendee and crud functionalities.">
+      <option name="closed" value="true" />
+      <created>1772215821251</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1772215821251</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add token and user controllers and role authorization for CRUD.">
+      <option name="closed" value="true" />
+      <created>1772227494405</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1772227494405</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add admin and ownerCheck PreAuthorized to protect endpoints.">
+      <option name="closed" value="true" />
+      <created>1772241245713</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1772241245713</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add auth functionalities and user functionalities." />
+    <MESSAGE value="Addfunctionalities and user functionalities." />
+    <MESSAGE value="Add attendee and crud functionalities." />
+    <MESSAGE value="Add token and user controllers and role authorization for CRUD." />
+    <MESSAGE value="Add admin and ownerCheck PreAuthorized to protect endpoints." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add admin and ownerCheck PreAuthorized to protect endpoints." />
+  </component>
+</project>

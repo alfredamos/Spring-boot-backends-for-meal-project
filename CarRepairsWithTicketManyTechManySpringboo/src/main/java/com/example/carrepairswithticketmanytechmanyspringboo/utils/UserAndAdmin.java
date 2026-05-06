@@ -1,7 +1,7 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.utils;
 
-import com.example.carrepairshopspringbackend.entities.Role;
-import com.example.carrepairshopspringbackend.entities.User;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.Role;
+import com.example.carrepairswithticketmanytechmanyspringboo.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
