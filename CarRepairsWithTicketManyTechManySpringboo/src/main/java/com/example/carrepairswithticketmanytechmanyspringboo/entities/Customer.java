@@ -2,6 +2,8 @@ package com.example.carrepairswithticketmanytechmanyspringboo.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -24,8 +26,8 @@ public class Customer {
     @Column(nullable = false)
     private String address;
 
-    @Column()
-    private Boolean active = true;
+    @Column(nullable = false)
+    private boolean active = true;
 
     @Column(nullable = false)
     private String notes;
@@ -37,11 +39,11 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 }

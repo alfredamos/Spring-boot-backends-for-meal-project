@@ -1,14 +1,15 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.services;
 
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerCreate;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerDto;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerEdit;
+import com.example.carrepairswithticketmanytechmanyspringboo.dto.*;
 import com.example.carrepairswithticketmanytechmanyspringboo.entities.Customer;
 import com.example.carrepairswithticketmanytechmanyspringboo.exceptions.NotFoundException;
 import com.example.carrepairswithticketmanytechmanyspringboo.mappers.CustomerMapper;
 import com.example.carrepairswithticketmanytechmanyspringboo.repositories.CustomerRepository;
 import com.example.carrepairswithticketmanytechmanyspringboo.repositories.UserRepository;
+import com.example.carrepairswithticketmanytechmanyspringboo.utils.ResponseMessage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,20 @@ public class CustomerService implements ICustomerService{
     private final UserRepository userRepository;
 
     @Override
-    public CustomerDto createCustomer(CustomerCreate request) {
+    public CustomerResponse changeCustomerStatus(UUID id) {
+        //----> Get the customer by id.
+        var customer = this.getOneCustomerById(id);
+
+        //----> Change the status of the customer and store it in db.
+        customer.setActive(!customer.isActive());
+        var updatedCustomer = customerRepository.save(customer);
+
+        //----> Return the updated customer.
+        return ToCustomerResponse.toCustomerResponse(updatedCustomer);
+    }
+
+    @Override
+    public CustomerResponse createCustomer(CustomerCreate request) {
         //----> Get the user by id.
         var user = userRepository.getUsersById(request.getUserId());
 
@@ -32,24 +46,26 @@ public class CustomerService implements ICustomerService{
         var savedCustomer = customerRepository.save(customer);
 
         //----> Return the customer.
-        return customerMapper.toDTO(savedCustomer);
+        return ToCustomerResponse.toCustomerResponse(savedCustomer);
 
     }
 
+    @Transactional
     @Override
-    public CustomerDto deleteCustomerById(UUID id) {
+    public ResponseMessage deleteCustomerById(UUID id) {
         //----> Check for null customer.
-        this.getOneCustomerById(id);
+        var customer = this.getOneCustomerById(id);
 
         //----> Delete the customer with the giving id.
-        var deletedCustomer = customerRepository.deleteCustomerById(id);
+        userRepository.deleteUserById(customer.getUser().getId());
+        //var deletedCustomer = customerRepository.deleteCustomerById(id);
 
-        //----> Return the deleted customer.
-        return customerMapper.toDTO(deletedCustomer);
+        //----> Send back response.
+        return ResponseMessage.builder().message("Customer deleted successfully.").status("success").statusCode(HttpStatus.OK).build();
     }
 
     @Override
-    public CustomerDto editCustomerById(UUID id, CustomerEdit request) {
+    public CustomerResponse editCustomerById(UUID id, CustomerEdit request) {
         //----> Check for null customer.
         this.getOneCustomerById(id);
 
@@ -59,44 +75,48 @@ public class CustomerService implements ICustomerService{
         var updatedCustomer = customerRepository.save(editedCustomer);
 
         //----> Return the updated customer.
-        return customerMapper.toDTO(updatedCustomer);
+        return ToCustomerResponse.toCustomerResponse(updatedCustomer);
     }
 
     @Override
-    public CustomerDto getCustomerById(UUID id) {
+    public CustomerResponse getCustomerById(UUID id) {
         //----> Get the customer by id.
         var customer = this.getOneCustomerById(id);
 
+        System.out.println("In get-customer-by-id, customer : " + customer);
+
         //----> Return the customer.
-        return customerMapper.toDTO(customer);
+        return ToCustomerResponse.toCustomerResponse(customer);
     }
 
     @Override
-    public List<CustomerDto> getActiveCustomers() {
+    public List<CustomerResponse> getActiveCustomers() {
         //----> Fetch active customers.
         var customers = customerRepository.findActiveCustomers();
 
         //----> Return the customers.
-        return customerMapper.toDTOList(customers);
+        return customers.stream().map(ToCustomerResponse::toCustomerResponse).toList();
 
     }
 
     @Override
-    public List<CustomerDto> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomers() {
         //----> Fetch all customers.
         var customers = customerRepository.findAll();
 
+        System.out.println("In get-all-customers, customers : " + customers);
+
         //----> Return the customers.
-        return customerMapper.toDTOList(customers);
+        return customers.stream().map(ToCustomerResponse::toCustomerResponse).toList();
     }
 
     @Override
-    public List<CustomerDto> getInactiveCustomers() {
+    public List<CustomerResponse> getInactiveCustomers() {
         //----> Fetch active customers.
         var customers = customerRepository.findInactiveCustomers();
 
         //----> Return the customers.
-        return customerMapper.toDTOList(customers);
+        return customers.stream().map(ToCustomerResponse::toCustomerResponse).toList();
     }
 
     private Customer getOneCustomerById(UUID id){
