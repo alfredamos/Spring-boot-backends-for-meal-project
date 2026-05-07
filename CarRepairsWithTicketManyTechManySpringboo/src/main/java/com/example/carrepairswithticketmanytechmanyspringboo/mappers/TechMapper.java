@@ -1,9 +1,6 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.mappers;
 
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerCreate;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.CustomerDto;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.TechnicianCreate;
-import com.example.carrepairswithticketmanytechmanyspringboo.dto.TechnicianDto;
+import com.example.carrepairswithticketmanytechmanyspringboo.dto.*;
 import com.example.carrepairswithticketmanytechmanyspringboo.entities.Customer;
 import com.example.carrepairswithticketmanytechmanyspringboo.entities.Technician;
 import org.mapstruct.Mapper;
@@ -15,6 +12,7 @@ import java.util.List;
 public interface TechMapper {
     Technician toEntity(TechnicianDto techDto);
     Technician toEntity(TechnicianCreate request);
+    Technician toEntity(TechnicianEdit request);
 
     @Mapping(source = "user.id", target = "userId")
     TechnicianDto toDTO(Technician technician);

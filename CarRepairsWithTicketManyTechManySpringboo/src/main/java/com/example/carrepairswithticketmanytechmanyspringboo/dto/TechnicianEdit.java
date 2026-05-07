@@ -12,7 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TechnicianCreate {
+public class TechnicianEdit {
+    private UUID id;
+
     @NotBlank(message = "Specialty must be valid.")
     private String specialty;
 

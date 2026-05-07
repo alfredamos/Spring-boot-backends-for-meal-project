@@ -2,6 +2,8 @@ package com.example.carrepairswithticketmanytechmanyspringboo.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -29,11 +31,11 @@ public class Technician {
     @JoinColumn(name = "userId", referencedColumnName = "id") // Foreign key column in 'technicians' table
     private User user;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 

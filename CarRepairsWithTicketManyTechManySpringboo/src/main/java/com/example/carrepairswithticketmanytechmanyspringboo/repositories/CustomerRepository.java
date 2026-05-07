@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
-    Customer deleteCustomerById(UUID id);
+    Customer getCustomersByUserId(UUID userId);
+    Customer getCustomerById(UUID id);
     @Query("SELECT c FROM Customer c WHERE  c.active = false ")
     List<Customer> findInactiveCustomers();
 

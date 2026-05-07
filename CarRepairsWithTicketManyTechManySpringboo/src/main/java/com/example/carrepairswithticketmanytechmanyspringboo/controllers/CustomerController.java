@@ -59,6 +59,14 @@ public class CustomerController {
 
     }
 
+    @GetMapping("/by-user-id/{userId}")
+    public ResponseEntity<?> getCustomerByUserId(@PathVariable UUID userId){
+        var response = customerService.getCustomerByUserId(userId);
+
+        return ResponseEntity.ok(response);
+
+    }
+
     @GetMapping
     public ResponseEntity<?> getAllCustomers(){
         var response = customerService.getAllCustomers();

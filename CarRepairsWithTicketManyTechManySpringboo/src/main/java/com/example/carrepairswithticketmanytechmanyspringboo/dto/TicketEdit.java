@@ -9,12 +9,17 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class TechnicianCreate {
-    @NotBlank(message = "Specialty must be valid.")
-    private String specialty;
+public class TicketEdit {
+    private UUID id;
 
-    private UUID userId;
+    @NotBlank(message = "Name is required!")
+    private String title;
+
+    @NotBlank(message = "Notes is required!")
+    private String description;
+
+    private UUID customerId;
 }

@@ -66,12 +66,16 @@ public class CustomerService implements ICustomerService{
 
     @Override
     public CustomerResponse editCustomerById(UUID id, CustomerEdit request) {
+        //----> Get the user by id.
+        var user = userRepository.getUsersById(request.getUserId());
+
         //----> Check for null customer.
         this.getOneCustomerById(id);
 
         //----> Edit the customer with the giving id.
         var editedCustomer = customerMapper.toEntity(request);
         editedCustomer.setId(id);
+        editedCustomer.setUser(user);
         var updatedCustomer = customerRepository.save(editedCustomer);
 
         //----> Return the updated customer.
@@ -84,6 +88,18 @@ public class CustomerService implements ICustomerService{
         var customer = this.getOneCustomerById(id);
 
         System.out.println("In get-customer-by-id, customer : " + customer);
+
+        //----> Return the customer.
+        return ToCustomerResponse.toCustomerResponse(customer);
+    }
+
+    @Override
+    public CustomerResponse getCustomerByUserId(UUID userId) {
+        //----> Fetch customer by user id.
+        var customer = customerRepository.getCustomersByUserId(userId);
+
+        //----> Check for null customer.
+        if(customer == null) throw new NotFoundException("Customer not found!");
 
         //----> Return the customer.
         return ToCustomerResponse.toCustomerResponse(customer);

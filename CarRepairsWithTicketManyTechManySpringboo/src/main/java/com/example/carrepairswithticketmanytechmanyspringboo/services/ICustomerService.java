@@ -15,6 +15,7 @@ public interface ICustomerService {
     ResponseMessage deleteCustomerById(UUID id);
     CustomerResponse editCustomerById(UUID id, CustomerEdit request);
     CustomerResponse getCustomerById(UUID id);
+    CustomerResponse getCustomerByUserId(UUID userId);
     List<CustomerResponse> getActiveCustomers();
     List<CustomerResponse> getAllCustomers();
     List<CustomerResponse> getInactiveCustomers();

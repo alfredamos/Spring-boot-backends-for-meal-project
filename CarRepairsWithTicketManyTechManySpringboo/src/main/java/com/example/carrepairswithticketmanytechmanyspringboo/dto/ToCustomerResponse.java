@@ -4,8 +4,6 @@ import com.example.carrepairswithticketmanytechmanyspringboo.entities.Customer;
 
 
 public class ToCustomerResponse {
-    private CustomerResponse customerResponse;
-
     public static CustomerResponse toCustomerResponse(Customer customer){
         return CustomerResponse.builder().
                 id(customer.getId()).
