@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface TechnicianRepository extends JpaRepository<Technician, UUID> {
     List<Technician> getTechniciansBySpecialty(String specialty);
+    Technician getTechnicianById(UUID id);
     Technician getTechniciansByUserId(UUID userId);
 }

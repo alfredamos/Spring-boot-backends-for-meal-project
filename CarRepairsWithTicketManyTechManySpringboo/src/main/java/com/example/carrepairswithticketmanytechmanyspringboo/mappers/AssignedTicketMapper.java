@@ -4,10 +4,12 @@ import com.example.carrepairswithticketmanytechmanyspringboo.dto.AssignedTicketC
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.AssignedTicketDto;
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.AssignedTicketEdit;
 import com.example.carrepairswithticketmanytechmanyspringboo.entities.AssignedTicket;
+import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
 
+@Mapper(componentModel = "spring")
 public interface AssignedTicketMapper {
     AssignedTicket toEntity(AssignedTicketDto assignedTicketDto);
     AssignedTicket toEntity(AssignedTicketCreate request);

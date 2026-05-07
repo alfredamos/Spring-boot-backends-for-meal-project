@@ -13,7 +13,7 @@ public interface AssignedTicketRepository extends JpaRepository<AssignedTicket, 
     List<AssignedTicket> findAssignedTicketsByTicketId(UUID ticketId);
     List<AssignedTicket> findAssignedTicketsByTechId(UUID techId);
     List<AssignedTicket> findAssignedTicketsByTechIdAndTicketId(UUID techId, UUID ticketId);
-    void deleteByTechIdAndTicketId(UUID techId, UUID ticketId);
+    AssignedTicket deleteByTechIdAndTicketId(UUID techId, UUID ticketId);
     AssignedTicket findByTechIdAndTicketId(UUID techId, UUID ticketId);
 
     @Query("SELECT t FROM AssignedTicket t WHERE  t.completed = true")
