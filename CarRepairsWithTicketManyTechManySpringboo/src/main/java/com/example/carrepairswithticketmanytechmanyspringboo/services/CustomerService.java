@@ -43,6 +43,7 @@ public class CustomerService implements ICustomerService{
         //----> Create the customer.
         var customer = customerMapper.toEntity(request);
         customer.setUser(user);
+        customer.setActive(true);
         var savedCustomer = customerRepository.save(customer);
 
         //----> Return the customer.

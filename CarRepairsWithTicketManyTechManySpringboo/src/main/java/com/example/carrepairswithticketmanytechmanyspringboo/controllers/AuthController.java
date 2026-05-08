@@ -1,7 +1,7 @@
 package com.example.carrepairswithticketmanytechmanyspringboo.controllers;
 
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.*;
-import com.example.carrepairswithticketmanytechmanyspringboo.services.AuthService;
+import com.example.carrepairswithticketmanytechmanyspringboo.services.IAuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @EnableJpaAuditing
 public class AuthController {
-    private final AuthService authService;
+    private final IAuthService authService;
 
     @PatchMapping("/change-password")
     public ResponseEntity<?> changeUserPassword(@RequestBody @Valid ChangeUserPassword request){

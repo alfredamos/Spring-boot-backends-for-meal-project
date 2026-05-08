@@ -11,6 +11,7 @@ import com.example.carrepairswithticketmanytechmanyspringboo.mappers.AssignedTic
 import com.example.carrepairswithticketmanytechmanyspringboo.repositories.AssignedTicketRepository;
 import com.example.carrepairswithticketmanytechmanyspringboo.repositories.TechnicianRepository;
 import com.example.carrepairswithticketmanytechmanyspringboo.repositories.TicketRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AssignedTicketService implements IAssignedTicketService {
+    private final IAuthService  authService;
     private final AssignedTicketRepository assignedTicketRepository;
     private final AssignedTicketMapper assignedTicketMapper;
     private final TicketRepository ticketRepository;
@@ -33,7 +35,7 @@ public class AssignedTicketService implements IAssignedTicketService {
         var assignedTicket = this.getOneAssignedTicket(techId, ticketId);
 
         //----> Change ticket-status.
-        var completed = !assignedTicket.getCompleted();
+        var completed = !assignedTicket.isCompleted();
         assignedTicket.setCompleted(completed);
         var status = assignedTicket.getStatus() == Status.Closed ? Status.Open : Status.Closed;
         assignedTicket.setStatus(status);
@@ -46,13 +48,18 @@ public class AssignedTicketService implements IAssignedTicketService {
     }
 
     @Override
-    public AssignedTicketResponse createAssignedTicket(AssignedTicketCreate request) {
+    public AssignedTicketResponse createAssignedTicket(AssignedTicketCreate ticketCreate, HttpServletRequest request) {
+        //----> Get user session.
+        var session = authService.getUserSession(request);
+        ticketCreate.assignBy = session.getName();
+
         //----> Map the assigned-ticket-create to assigned-ticket.
-        var assignedTicket = assignedTicketMapper.toEntity(request);
+        var assignedTicket = assignedTicketMapper.toEntity(ticketCreate);
 
         //----> Get the technician and the ticket.
-        var tech = technicianRepository.getTechnicianById(request.getTechId());
-        var ticket = ticketRepository.findTicketById(request.getTicketId());
+        var tech = technicianRepository.getTechnicianById(ticketCreate.getTechId());
+        var ticket = ticketRepository.findTicketById(ticketCreate.getTicketId());
+        assignedTicket.setStatus(Status.Open);
         assignedTicket.setTech(tech);
         assignedTicket.setTicket(ticket);
 
@@ -67,7 +74,7 @@ public class AssignedTicketService implements IAssignedTicketService {
     @Override
     public AssignedTicketResponse deleteAssignedTicketById(UUID techId, UUID ticketId) {
         //----> Check for null assigned-ticket.
-        assignedTicketRepository.deleteById(ticketId);
+        this.getOneAssignedTicket(techId, ticketId);
 
         //----> Delete the assigned ticket with the giving tech-id and ticket-id.
         var deletedAssignedTicket = assignedTicketRepository.deleteByTechIdAndTicketId(techId, ticketId);
@@ -79,16 +86,22 @@ public class AssignedTicketService implements IAssignedTicketService {
     @Override
     public AssignedTicketResponse editAssignedTicketById(UUID techId, UUID ticketId, AssignedTicketEdit request) {
         //----> Map the assigned-ticket-edit to assigned-ticket.
-        var assignedTicket = assignedTicketMapper.toEntity(request);
+        var assignedTicketEntity = assignedTicketMapper.toEntity(request);
+
+        //----> Check for existence of ticket.
+        var assignedTicket = this.getOneAssignedTicket(techId, ticketId);
 
         //----> Get the technician and the ticket.
         var tech = technicianRepository.getTechnicianById(techId);
         var ticket = ticketRepository.findTicketById(ticketId);
-        assignedTicket.setTech(tech);
-        assignedTicket.setTicket(ticket);
+        assignedTicketEntity.setId(assignedTicket.getId());
+        assignedTicketEntity.setAssignBy(assignedTicket.getAssignBy());
+        assignedTicketEntity.setAssignAt(assignedTicket.getAssignAt());
+        assignedTicketEntity.setTech(tech);
+        assignedTicketEntity.setTicket(ticket);
 
         //----> Update the assigned-ticket.
-        var updatedAssignedTicket = assignedTicketRepository.save(assignedTicket);
+        var updatedAssignedTicket = assignedTicketRepository.save(assignedTicketEntity);
 
         //----> Send back response.
         return ToAssignedTicketResponse.toAssignedTicketResponse(updatedAssignedTicket);

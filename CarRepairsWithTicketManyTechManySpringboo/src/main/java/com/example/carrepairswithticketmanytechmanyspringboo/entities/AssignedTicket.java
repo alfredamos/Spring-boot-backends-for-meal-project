@@ -19,7 +19,7 @@ public class AssignedTicket {
     private AssignedTicketId id = new AssignedTicketId();
 
     @Column(name = "completed", nullable = false)
-    private Boolean completed = false;
+    private boolean completed;
 
     @Column(name = "assignBy", nullable = false)
     private String assignBy;

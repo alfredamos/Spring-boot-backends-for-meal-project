@@ -7,7 +7,7 @@ public class ToAssignedTicketResponse {
         return AssignedTicketResponse.builder()
                 .assignAt(ticket.getAssignAt())
                 .assignBy(ticket.getAssignBy())
-                .completed(ticket.getCompleted())
+                .completed(ticket.isCompleted())
                 .customerAddress(ticket.getTicket().getCustomer().getAddress())
                 .customerEmail(ticket.getTicket().getCustomer().getUser().getEmail())
                 .customerImage(ticket.getTicket().getCustomer().getUser().getImage())

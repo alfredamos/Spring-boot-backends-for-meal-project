@@ -2,11 +2,12 @@ package com.example.carrepairswithticketmanytechmanyspringboo.controllers;
 
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.TicketCreate;
 import com.example.carrepairswithticketmanytechmanyspringboo.dto.TicketEdit;
-import com.example.carrepairswithticketmanytechmanyspringboo.services.TicketService;
+import com.example.carrepairswithticketmanytechmanyspringboo.services.ITicketService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -15,9 +16,10 @@ import java.util.UUID;
 @RequestMapping("/api/tickets")
 @RequiredArgsConstructor
 public class TicketController {
-    private final TicketService ticketService;
+    private final ITicketService ticketService;
 
     @PostMapping
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreate request){
         var response = ticketService.createTicket(request);
 
@@ -25,6 +27,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> deleteTicketById(@PathVariable UUID id){
         var response = ticketService.deleteTicketById(id);
 
@@ -32,6 +35,7 @@ public class TicketController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> editTicketById(@PathVariable UUID id, @Valid @RequestBody TicketEdit request){
         var response = ticketService.editTicketById(id, request);
 
@@ -39,6 +43,7 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> getTicketId(@PathVariable UUID id){
         var response = ticketService.getTicketById(id);
 
@@ -46,6 +51,7 @@ public class TicketController {
     }
 
     @GetMapping
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> getAllTickets(){
         var response = ticketService.getAllTickets();
 
@@ -53,6 +59,7 @@ public class TicketController {
     }
 
     @GetMapping("/by-customer-id/{customerId}")
+    @PreAuthorize("@sameUserAndAdmin.checkForAdmin()")
     public ResponseEntity<?> getTicketsByCustomerId(@PathVariable UUID customerId){
         var response = ticketService.getTicketsByCustomerId(customerId);
 
