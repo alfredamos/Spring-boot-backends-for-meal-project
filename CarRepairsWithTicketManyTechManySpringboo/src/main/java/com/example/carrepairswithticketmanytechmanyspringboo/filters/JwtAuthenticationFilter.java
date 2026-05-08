@@ -40,9 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         var requestURI = request.getRequestURI(); //----> Get current uri.
 
-
-        System.out.println("In Jwt-auth-filter: " + requestURI);
-
         //----> Check token only for non-public routes.
         if(!publicRoutes().contains(requestURI) && accessToken != null && !accessToken.isEmpty()) {
             //----> Get the jwt token.
